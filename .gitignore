@@ -1,0 +1,10 @@
+# TaskTracker artifacts (not mower-related)
+deploy*.js
+fix-*.js
+update-*.js
+init-db.js
+probe.js
+tasktracker.tar.gz
+tt-*.py
+tt-*.html
+www/

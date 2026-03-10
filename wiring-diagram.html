@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test Vehicle — Wiring Diagram</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d1117; color: #c9d1d9; padding: 20px;
+  }
+  h1 { font-size: 18px; color: #f0f6fc; margin-bottom: 3px; }
+  .meta { font-size: 11px; color: #6e7681; margin-bottom: 16px; }
+  .meta span { color: #58a6ff; }
+  .diagram-wrap {
+    background: #161b22; border: 1px solid #21262d;
+    border-radius: 6px; padding: 12px; overflow-x: auto; margin-bottom: 18px;
+  }
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 16px;
+    padding: 10px 14px; background: #161b22; border: 1px solid #21262d;
+    border-radius: 5px; font-size: 11px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-line { width: 26px; height: 3px; border-radius: 2px; }
+  .section-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
+    color: #8b949e; margin-bottom: 8px; padding-bottom: 5px;
+    border-bottom: 1px solid #21262d;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+  thead th {
+    text-align: left; padding: 6px 10px; font-size: 10px;
+    text-transform: uppercase; letter-spacing: 1px; color: #6e7681;
+    background: #0d1117; border-bottom: 1px solid #21262d;
+  }
+  tbody tr { border-bottom: 1px solid #161b22; }
+  tbody tr:hover { background: #1c2128; }
+  td { padding: 7px 10px; }
+  td.pin { font-family: monospace; color: #79c0ff; }
+  td.note { color: #8b949e; font-size: 11px; }
+  .safety-note {
+    background: #4f1a1a22; border: 1px solid #f8514944;
+    border-radius: 5px; padding: 10px 14px;
+    font-size: 12px; color: #ff7b72; margin-bottom: 16px; line-height: 1.6;
+  }
+  .links-bar {
+    display: flex; gap: 10px; margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid #21262d;
+  }
+  .links-bar a {
+    color: #8b949e; text-decoration: none; font-size: 12px;
+    padding: 5px 12px; border: 1px solid #30363d; border-radius: 5px;
+  }
+  .links-bar a:hover { border-color: #58a6ff; color: #58a6ff; }
+
+  @media print {
+    @page { size: letter landscape; margin: 0.4in; }
+    body { background: white !important; color: #111 !important; padding: 0; }
+    #site-nav { display: none !important; }
+    .diagram-wrap { background: white !important; border: 1px solid #ccc !important; padding: 6px !important; }
+    .legend { background: white !important; border-color: #ccc !important; }
+    .legend-item { color: #333 !important; }
+    .safety-note { background: #fff8f8 !important; border-color: #f88 !important; color: #a00 !important; }
+    table thead th { background: #f5f5f5 !important; color: #555 !important; }
+    .links-bar { display: none; }
+    h1 { color: #111 !important; }
+    .meta, .meta span { color: #555 !important; }
+    .section-title { color: #555 !important; border-color: #ccc !important; }
+  }
+</style>
+</head>
+<body>
+
+<h1>⚡ Test Vehicle — Wiring Diagram</h1>
+<div class="meta">Phase 1 &nbsp;·&nbsp; <span>2026-03-03</span> &nbsp;·&nbsp;
+  Modulino Joystick → STM32U585 → Cytron MDD10A → JGA37-520 Motors</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-line" style="background:#e05252;"></div>12V power</div>
+  <div class="legend-item"><div class="legend-line" style="background:#e3b341;"></div>5V logic</div>
+  <div class="legend-item"><div class="legend-line" style="background:#388bfd;"></div>Control (DIR/PWM)</div>
+  <div class="legend-item"><div class="legend-line" style="background:#d29922;"></div>Motor output</div>
+  <div class="legend-item"><div class="legend-line" style="background:#3fb950;"></div>I2C / QWIIC</div>
+  <div class="legend-item" style="color:#aaa;">⏚ = GND (all connect to battery −) &nbsp;·&nbsp; ▭ = Fuse</div>
+</div>
+
+<!-- SVG WIRING DIAGRAM -->
+<div class="diagram-wrap">
+<svg viewBox="0 0 960 590" width="960" height="590"
+     xmlns="http://www.w3.org/2000/svg" style="display:block; max-width:100%;">
+  <defs>
+    <marker id="a-red"  markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e05252"/></marker>
+    <marker id="a-yel"  markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e3b341"/></marker>
+    <marker id="a-blu"  markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#388bfd"/></marker>
+    <marker id="a-org"  markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#d29922"/></marker>
+    <marker id="a-grn"  markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#3fb950"/></marker>
+    <!-- GND symbol -->
+    <g id="gnd">
+      <line x1="0" y1="0" x2="0" y2="7"  stroke="#666" stroke-width="1.5"/>
+      <line x1="-7" y1="7"  x2="7"  y2="7"  stroke="#666" stroke-width="1.5"/>
+      <line x1="-5" y1="11" x2="5"  y2="11" stroke="#666" stroke-width="1.5"/>
+      <line x1="-2" y1="15" x2="2"  y2="15" stroke="#666" stroke-width="1.5"/>
+    </g>
+  </defs>
+
+  <rect width="960" height="590" fill="#0d1117" rx="4"/>
+
+  <!-- ════════════════════════════════════
+       COMPONENTS
+  ════════════════════════════════════ -->
+
+  <!-- BATTERY -->
+  <rect x="374" y="14" width="192" height="54" rx="5" fill="#0d1a2a" stroke="#388bfd" stroke-width="1.5"/>
+  <text x="470" y="34"  text-anchor="middle" font-size="12" font-weight="700" fill="#79c0ff">12V Battery</text>
+  <text x="470" y="50"  text-anchor="middle" font-size="10" fill="#8b949e">5Ah Li-ion · XT60</text>
+  <circle cx="392" cy="68" r="4.5" fill="#e05252"/>
+  <text x="392" y="82" text-anchor="middle" font-size="9" fill="#e05252">12V+</text>
+  <use href="#gnd" transform="translate(548,68)"/>
+  <text x="548" y="92" text-anchor="middle" font-size="9" fill="#666">BAT−</text>
+
+  <!-- ── 20A FUSE (main power line) ── -->
+  <!-- Sits on the horizontal 12V+ rail between battery (x=392) and E-stop (x=121) -->
+  <!-- Fuse at x=255, y=68 -->
+  <line x1="392" y1="68" x2="278" y2="68" stroke="#e05252" stroke-width="2.5"/>
+  <rect x="240" y="60" width="38" height="16" rx="3" fill="#1a0a0a" stroke="#e05252" stroke-width="1.5"/>
+  <text x="259" y="72" text-anchor="middle" font-size="8" font-weight="700" fill="#e05252">20A</text>
+  <line x1="240" y1="68" x2="121" y2="68" stroke="#e05252" stroke-width="2.5" marker-end="url(#a-red)"/>
+  <text x="320" y="62" text-anchor="middle" font-size="8" fill="#e05252">FUSE</text>
+
+  <!-- ── 5A FUSE (logic / buck line, dashed) ── -->
+  <!-- On the dashed branch from battery+ (x=392) going right to Buck (x=666) -->
+  <line x1="392" y1="68" x2="530" y2="68" stroke="#e05252" stroke-width="2" stroke-dasharray="6,3"/>
+  <rect x="530" y="60" width="30" height="16" rx="3" fill="#1a0a0a" stroke="#e05252" stroke-width="1.5"/>
+  <text x="545" y="72" text-anchor="middle" font-size="8" font-weight="700" fill="#e05252">5A</text>
+  <line x1="560" y1="68" x2="666" y2="68" stroke="#e05252" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#a-red)"/>
+  <text x="610" y="62" text-anchor="middle" font-size="8" fill="#e05252">FUSE · unswitched</text>
+
+  <!-- junction dot on battery+ -->
+  <circle cx="392" cy="68" r="4" fill="#e05252"/>
+
+  <!-- E-STOP -->
+  <rect x="52" y="106" width="138" height="68" rx="5" fill="#2a0a0a" stroke="#e05252" stroke-width="1.5"/>
+  <text x="121" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#ff7b72">⛔ E-Stop</text>
+  <text x="121" y="141" text-anchor="middle" font-size="9"  fill="#8b949e">Mushroom · NC type</text>
+  <!-- Terminal labels -->
+  <circle cx="121" cy="106" r="3.5" fill="#e05252"/>
+  <text x="136" y="110" font-size="9" fill="#e05252">C (12V+ in)</text>
+  <circle cx="121" cy="174" r="3.5" fill="#e05252"/>
+  <text x="136" y="178" font-size="9" fill="#e05252">NC (12V+ out)</text>
+  <text x="121" y="158" text-anchor="middle" font-size="8" fill="#4a4a4a">NO — leave unconnected</text>
+
+  <!-- E-Stop → Switch -->
+  <line x1="121" y1="174" x2="121" y2="214" stroke="#e05252" stroke-width="2.5" marker-end="url(#a-red)"/>
+
+  <!-- MAIN SWITCH -->
+  <rect x="52" y="214" width="138" height="66" rx="5" fill="#0d1a20" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="121" y="234" text-anchor="middle" font-size="12" font-weight="600" fill="#e3b341">Main Switch</text>
+  <text x="121" y="249" text-anchor="middle" font-size="9"  fill="#8b949e">Illuminated rocker · 20A</text>
+  <!-- Terminal labels -->
+  <circle cx="121" cy="214" r="3.5" fill="#e05252"/>
+  <text x="136" y="218" font-size="9" fill="#e05252">Red — 12V+ in</text>
+  <circle cx="121" cy="280" r="3.5" fill="#e05252"/>
+  <text x="136" y="284" font-size="9" fill="#e05252">Red — 12V+ out</text>
+  <!-- LED GND (black wire) -->
+  <use href="#gnd" transform="translate(62,248)"/>
+  <text x="76" y="267" font-size="8" fill="#666">Black — LED GND</text>
+
+  <!-- Switch → MDD10A via horizontal at y=300 -->
+  <polyline points="121,280 121,300 270,300 270,318"
+            fill="none" stroke="#e05252" stroke-width="2.5"/>
+  <polyline points="270,318 270,364 222,364"
+            fill="none" stroke="#e05252" stroke-width="2.5" marker-end="url(#a-red)"/>
+  <text x="188" y="294" text-anchor="middle" font-size="9" fill="#e05252">12V (switched)</text>
+
+  <!-- CYTRON MDD10A -->
+  <rect x="216" y="318" width="204" height="180" rx="5" fill="#0d1f0d" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="318" y="338" text-anchor="middle" font-size="12" font-weight="700" fill="#56d364">Cytron MDD10A</text>
+  <text x="318" y="353" text-anchor="middle" font-size="9"  fill="#8b949e">Dual 10A · REV2.0</text>
+  <!-- B+ terminal -->
+  <circle cx="222" cy="364" r="3.5" fill="#e05252"/>
+  <text x="234" y="368" font-size="9" fill="#e05252">B+ (VM+)</text>
+  <!-- B- / GND terminal -->
+  <use href="#gnd" transform="translate(222,384)"/>
+  <text x="234" y="402" font-size="9" fill="#666">B− (GND)</text>
+  <!-- Motor outputs left -->
+  <circle cx="216" cy="422" r="3.5" fill="#d29922"/>
+  <text x="228" y="426" font-size="9" fill="#d29922">M1A / M1B</text>
+  <circle cx="216" cy="458" r="3.5" fill="#d29922"/>
+  <text x="228" y="462" font-size="9" fill="#d29922">M2A / M2B</text>
+  <!-- Control inputs right (header) -->
+  <rect x="400" y="370" width="20" height="100" rx="2" fill="#1a2a10" stroke="#3fb950" stroke-width="0.8"/>
+  <text x="410" y="362" text-anchor="middle" font-size="8" fill="#3fb950">HDR</text>
+  <circle cx="420" cy="388" r="3.5" fill="#388bfd"/>
+  <text x="418" y="385" text-anchor="end" font-size="9" fill="#79c0ff">DIR1</text>
+  <circle cx="420" cy="408" r="3.5" fill="#388bfd"/>
+  <text x="418" y="405" text-anchor="end" font-size="9" fill="#79c0ff">PWM1</text>
+  <circle cx="420" cy="428" r="3.5" fill="#388bfd"/>
+  <text x="418" y="425" text-anchor="end" font-size="9" fill="#79c0ff">DIR2</text>
+  <circle cx="420" cy="448" r="3.5" fill="#388bfd"/>
+  <text x="418" y="445" text-anchor="end" font-size="9" fill="#79c0ff">PWM2</text>
+  <circle cx="420" cy="468" r="3.5" fill="#666"/>
+  <text x="418" y="465" text-anchor="end" font-size="9" fill="#666">GND</text>
+
+  <!-- MOTOR L -->
+  <rect x="12" y="404" width="128" height="44" rx="5" fill="#0d1a20" stroke="#d29922" stroke-width="1.5"/>
+  <text x="76" y="422" text-anchor="middle" font-size="11" font-weight="600" fill="#d29922">Motor L (M1)</text>
+  <text x="76" y="437" text-anchor="middle" font-size="9"  fill="#8b949e">JGA37-520 · 12V · 150RPM</text>
+  <circle cx="140" cy="426" r="3.5" fill="#d29922"/>
+
+  <!-- MOTOR R -->
+  <rect x="12" y="464" width="128" height="44" rx="5" fill="#0d1a20" stroke="#d29922" stroke-width="1.5"/>
+  <text x="76" y="482" text-anchor="middle" font-size="11" font-weight="600" fill="#d29922">Motor R (M2)</text>
+  <text x="76" y="497" text-anchor="middle" font-size="9"  fill="#8b949e">JGA37-520 · 12V · 150RPM</text>
+  <circle cx="140" cy="486" r="3.5" fill="#d29922"/>
+
+  <!-- Motor wires -->
+  <polyline points="216,422 140,422 140,426" fill="none" stroke="#d29922" stroke-width="2.5" marker-end="url(#a-org)"/>
+  <text x="180" y="416" text-anchor="middle" font-size="9" fill="#d29922">M1</text>
+  <polyline points="216,458 158,458 158,486 140,486" fill="none" stroke="#d29922" stroke-width="2.5" marker-end="url(#a-org)"/>
+  <text x="188" y="452" text-anchor="middle" font-size="9" fill="#d29922">M2</text>
+
+  <!-- BUCK CONVERTER -->
+  <rect x="650" y="106" width="174" height="90" rx="5" fill="#1a1800" stroke="#e3b341" stroke-width="1.5"/>
+  <text x="737" y="126" text-anchor="middle" font-size="12" font-weight="600" fill="#e3b341">Buck Converter</text>
+  <text x="737" y="141" text-anchor="middle" font-size="9"  fill="#8b949e">12V → 5V / 3A · LM2596</text>
+  <!-- IN+ terminal -->
+  <circle cx="666" cy="106" r="3.5" fill="#e05252"/>
+  <text x="666" y="99" text-anchor="middle" font-size="8" fill="#e05252">IN+</text>
+  <!-- IN- / GND terminal -->
+  <use href="#gnd" transform="translate(692,106)"/>
+  <text x="692" y="100" text-anchor="middle" font-size="8" fill="#666">IN−</text>
+  <!-- OUT+ 5V terminal -->
+  <circle cx="737" cy="196" r="3.5" fill="#e3b341"/>
+  <text x="737" y="210" text-anchor="middle" font-size="8" fill="#e3b341">OUT+ 5V</text>
+  <!-- OUT- GND terminal -->
+  <use href="#gnd" transform="translate(790,196)"/>
+  <text x="790" y="210" text-anchor="middle" font-size="8" fill="#666">OUT−</text>
+  <!-- Screw terminal labels inside box -->
+  <text x="666" y="160" text-anchor="middle" font-size="8" fill="#6e7681">IN+</text>
+  <text x="692" y="160" text-anchor="middle" font-size="8" fill="#6e7681">IN−</text>
+  <text x="737" y="160" text-anchor="middle" font-size="8" fill="#6e7681">OUT+</text>
+  <text x="790" y="160" text-anchor="middle" font-size="8" fill="#6e7681">OUT−</text>
+  <line x1="656" y1="163" x2="816" y2="163" stroke="#30363d" stroke-width="0.5"/>
+  <text x="737" y="178" text-anchor="middle" font-size="8" fill="#4e4e2e">Set output to 5V before connecting Arduino</text>
+
+  <!-- ARDUINO UNO Q -->
+  <rect x="630" y="214" width="310" height="298" rx="7" fill="#111820" stroke="#30363d" stroke-width="1.5"/>
+  <text x="785" y="234" text-anchor="middle" font-size="13" font-weight="700" fill="#f0f6fc">Arduino UNO Q 4GB</text>
+  <!-- 5V IN terminal -->
+  <circle cx="737" cy="214" r="3.5" fill="#e3b341"/>
+  <text x="737" y="209" text-anchor="middle" font-size="8" fill="#e3b341">USB-C (5V)</text>
+
+  <!-- Linux sub-box -->
+  <rect x="642" y="242" width="286" height="84" rx="4" fill="#1a3a2a" stroke="#3fb950" stroke-width="0.8"/>
+  <text x="650" y="258" font-size="8" font-weight="700" letter-spacing="2" fill="#3fb950">🐧 LINUX — Qualcomm QRB2210</text>
+  <text x="650" y="273" font-size="9" fill="#8b949e">Debian · Python · WiFi5 · BT5.1</text>
+  <text x="650" y="287" font-size="9" fill="#8b949e">WebSocket server → Phase 2+</text>
+  <text x="650" y="301" font-size="9" fill="#8b949e">AI / computer vision → future</text>
+  <text x="650" y="315" font-size="9" fill="#4e6b55">← idle in Phase 1</text>
+
+  <!-- STM32 sub-box -->
+  <rect x="642" y="334" width="286" height="164" rx="4" fill="#1a2a40" stroke="#388bfd" stroke-width="0.8"/>
+  <text x="650" y="350" font-size="8" font-weight="700" letter-spacing="2" fill="#58a6ff">⚡ STM32U585 — Real-Time MCU</text>
+  <text x="650" y="365" font-size="9" fill="#8b949e">Motor PWM · safety watchdog</text>
+  <!-- Pin labels with left terminals -->
+  <circle cx="630" cy="382" r="3.5" fill="#388bfd"/>
+  <text x="650" y="386" font-size="9" fill="#79c0ff">Pin 3  → DIR1</text>
+  <circle cx="630" cy="402" r="3.5" fill="#388bfd"/>
+  <text x="650" y="406" font-size="9" fill="#79c0ff">Pin 4  → PWM1</text>
+  <circle cx="630" cy="422" r="3.5" fill="#388bfd"/>
+  <text x="650" y="426" font-size="9" fill="#79c0ff">Pin 6  → DIR2</text>
+  <circle cx="630" cy="442" r="3.5" fill="#388bfd"/>
+  <text x="650" y="446" font-size="9" fill="#79c0ff">Pin 7  → PWM2</text>
+  <!-- GND pin -->
+  <circle cx="630" cy="462" r="3.5" fill="#666"/>
+  <text x="650" y="466" font-size="9" fill="#666">GND → MDD10A GND pin</text>
+  <!-- STM32 GND symbol -->
+  <use href="#gnd" transform="translate(800,472)"/>
+  <text x="800" y="494" text-anchor="middle" font-size="8" fill="#666">GND</text>
+
+  <!-- QWIIC port on UNO Q -->
+  <rect x="700" y="480" width="96" height="20" rx="3" fill="#0d2015" stroke="#3fb950" stroke-width="0.8"/>
+  <text x="748" y="494" text-anchor="middle" font-size="9" fill="#3fb950">QWIIC / I2C</text>
+  <circle cx="748" cy="500" r="3.5" fill="#3fb950"/>
+
+  <!-- MODULINO JOYSTICK -->
+  <rect x="662" y="538" width="160" height="44" rx="5" fill="#0d1a2a" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="742" y="557" text-anchor="middle" font-size="11" font-weight="600" fill="#79c0ff">Modulino Joystick</text>
+  <text x="742" y="572" text-anchor="middle" font-size="9"  fill="#8b949e">X · Y · Button · QWIIC I2C</text>
+  <circle cx="748" cy="538" r="3.5" fill="#3fb950"/>
+
+  <!-- Phase box -->
+  <rect x="834" y="14" width="116" height="52" rx="4" fill="#0d1a2a" stroke="#21262d" stroke-width="1"/>
+  <text x="892" y="31"  text-anchor="middle" font-size="10" font-weight="600" fill="#f0f6fc">Phase 1 Active</text>
+  <text x="892" y="46"  text-anchor="middle" font-size="9" fill="#3fb950">✓ Joystick → Motors</text>
+  <text x="892" y="58"  text-anchor="middle" font-size="9" fill="#6e7681">○ Linux idle</text>
+
+  <!-- ════════════════════════════════════
+       WIRES
+  ════════════════════════════════════ -->
+
+  <!-- Buck 5V OUT → Arduino USB-C
+       Route: from (737,196) down to (737,214) -->
+  <line x1="737" y1="196" x2="737" y2="214" stroke="#e3b341" stroke-width="2" marker-end="url(#a-yel)"/>
+  <text x="752" y="208" font-size="8" fill="#e3b341">5V</text>
+
+  <!-- STM32 Pin 3 (DIR1) → MDD10A DIR1 -->
+  <polyline points="630,382 440,382 440,388 420,388"
+            fill="none" stroke="#388bfd" stroke-width="1.8" marker-end="url(#a-blu)"/>
+  <!-- STM32 Pin 4 (PWM1) → MDD10A PWM1 -->
+  <polyline points="630,402 450,402 450,408 420,408"
+            fill="none" stroke="#388bfd" stroke-width="1.8" stroke-dasharray="6,2" marker-end="url(#a-blu)"/>
+  <!-- STM32 Pin 6 (DIR2) → MDD10A DIR2 -->
+  <polyline points="630,422 460,422 460,428 420,428"
+            fill="none" stroke="#388bfd" stroke-width="1.8" marker-end="url(#a-blu)"/>
+  <!-- STM32 Pin 7 (PWM2) → MDD10A PWM2 -->
+  <polyline points="630,442 470,442 470,448 420,448"
+            fill="none" stroke="#388bfd" stroke-width="1.8" stroke-dasharray="6,2" marker-end="url(#a-blu)"/>
+  <!-- STM32 GND → MDD10A GND pin -->
+  <polyline points="630,462 480,462 480,468 420,468"
+            fill="none" stroke="#666" stroke-width="1.5" marker-end="url(#a-blu)"/>
+
+  <text x="524" y="415" text-anchor="middle" font-size="8" fill="#388bfd">── DIR &nbsp;- - PWM</text>
+
+  <!-- QWIIC: UNO Q → Joystick -->
+  <line x1="748" y1="500" x2="748" y2="538" stroke="#3fb950" stroke-width="2" marker-end="url(#a-grn)"/>
+  <text x="764" y="522" font-size="9" fill="#3fb950">QWIIC</text>
+  <text x="764" y="532" font-size="8" fill="#8b949e">(SDA/SCL/3.3V/GND)</text>
+
+</svg>
+</div>
+
+<!-- SAFETY NOTE -->
+<div class="safety-note">
+  <strong>⛔ Fuse + E-Stop wiring order (from battery+):</strong>
+  Battery+ → [20A inline fuse] → E-Stop C terminal → E-Stop NC terminal → Main Switch → MDD10A B+.
+  The 5A fuse protects the unswitched logic branch to the buck converter.
+  Always install fuses before first power-on.
+</div>
+
+<!-- TABLES -->
+<p class="section-title">Power Path — Complete Connections</p>
+<table>
+  <thead><tr><th>From</th><th>To</th><th>Wire</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Battery 12V+ (XT60)</td><td>20A inline fuse IN</td><td class="pin">12 AWG · Red</td><td class="note">First connection from battery — as close to battery as possible</td></tr>
+    <tr><td>20A fuse OUT</td><td>E-Stop C terminal</td><td class="pin">12 AWG · Red</td><td class="note">Main power line — always protected</td></tr>
+    <tr><td>E-Stop NC terminal</td><td>Main Switch (Red in)</td><td class="pin">12 AWG · Red</td><td class="note">NC = normally closed; pressing mushroom opens this circuit</td></tr>
+    <tr><td>E-Stop NO terminal</td><td>—</td><td class="pin">—</td><td class="note">Leave unconnected</td></tr>
+    <tr><td>Main Switch (Red out)</td><td>MDD10A B+</td><td class="pin">12 AWG · Red</td><td class="note">Switched 12V to motor driver</td></tr>
+    <tr><td>Main Switch (Black)</td><td>Common GND ⏚</td><td class="pin">Any · Black</td><td class="note">LED illumination return — connects to GND bus</td></tr>
+    <tr><td>Battery 12V+ (tap)</td><td>5A inline fuse IN</td><td class="pin">16 AWG · Red</td><td class="note">Unswitched logic branch — always live when battery is connected</td></tr>
+    <tr><td>5A fuse OUT</td><td>Buck converter IN+</td><td class="pin">16 AWG · Red</td><td class="note">Use 1.5mm² ferrules on screw terminals</td></tr>
+    <tr><td>Battery GND (XT60)</td><td>Common GND ⏚</td><td class="pin">12 AWG · Black</td><td class="note">All ⏚ symbols tie back to this point</td></tr>
+  </tbody>
+</table>
+
+<p class="section-title">Buck Converter → Arduino UNO Q</p>
+<table>
+  <thead><tr><th>Buck Terminal</th><th>Arduino Connection</th><th>Wire</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>IN+</td><td>— (12V from 5A fuse)</td><td class="pin">16 AWG · Red · 1.5mm² ferrule</td><td class="note">12V input to buck</td></tr>
+    <tr><td>IN−</td><td>— (Common GND ⏚)</td><td class="pin">16 AWG · Black · 1.5mm² ferrule</td><td class="note">Buck input ground</td></tr>
+    <tr><td>OUT+</td><td>USB-C VBUS (5V)</td><td class="pin">16 AWG · Red/Yellow</td><td class="note">5V regulated output → Arduino USB-C port VBUS pin</td></tr>
+    <tr><td>OUT−</td><td>USB-C GND</td><td class="pin">16 AWG · Black</td><td class="note">Buck output ground → Arduino USB-C port GND pin</td></tr>
+    <tr><td colspan="4" class="note">⚠️ Set buck output to exactly 5.0V with a multimeter <em>before</em> connecting to Arduino. Adjust the trimmer pot on the buck board.</td></tr>
+  </tbody>
+</table>
+
+<p class="section-title">USB-C Power Cable Wiring (Buck → Arduino)</p>
+<table>
+  <thead><tr><th>USB-C Pin</th><th>Wire Color (standard)</th><th>Connect to</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td class="pin">VBUS (A4 / B4)</td><td>Red</td><td>Buck OUT+</td><td class="note">5V power — both A4 and B4 are VBUS, connect either or both</td></tr>
+    <tr><td class="pin">GND (A1 / B1)</td><td>Black</td><td>Buck OUT−</td><td class="note">Ground — both A1 and B1 are GND</td></tr>
+    <tr><td class="pin">CC1 / CC2</td><td>—</td><td>Leave open</td><td class="note">Not needed for simple 5V power delivery</td></tr>
+    <tr><td class="pin">D+ / D−</td><td>—</td><td>Leave open</td><td class="note">Data lines — not used</td></tr>
+    <tr><td colspan="4" class="note">Easiest approach: cut a USB-A to USB-C cable, use the USB-A end (Red=VBUS, Black=GND) — no special connector needed.</td></tr>
+  </tbody>
+</table>
+
+<p class="section-title">STM32 → Cytron MDD10A Control Header</p>
+<table>
+  <thead><tr><th>Arduino Pin</th><th>MDD10A Pin</th><th>Signal</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td class="pin">3</td><td>DIR1</td><td>Left direction</td><td class="note">HIGH = forward · LOW = reverse</td></tr>
+    <tr><td class="pin">4</td><td>PWM1</td><td>Left speed</td><td class="note">analogWrite 0–255</td></tr>
+    <tr><td class="pin">6</td><td>DIR2</td><td>Right direction</td><td class="note">HIGH = forward · LOW = reverse</td></tr>
+    <tr><td class="pin">7</td><td>PWM2</td><td>Right speed</td><td class="note">analogWrite 0–255</td></tr>
+    <tr><td class="pin">GND</td><td>GND (header)</td><td>Common ground</td><td class="note">Use the GND pin on the MDD10A control header</td></tr>
+  </tbody>
+</table>
+
+<p class="section-title">Modulino Joystick — QWIIC Connector</p>
+<table>
+  <thead><tr><th>QWIIC Pin</th><th>UNO Q</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td class="pin">SDA</td><td>SDA</td><td class="note">Use QWIIC cable directly — no breadboard needed</td></tr>
+    <tr><td class="pin">SCL</td><td>SCL</td><td class="note">All 4 signals in one cable</td></tr>
+    <tr><td class="pin">3.3V</td><td>3.3V</td><td class="note">Logic power for joystick module</td></tr>
+    <tr><td class="pin">GND</td><td>GND</td><td class="note">Carried in QWIIC cable</td></tr>
+  </tbody>
+</table>
+
+<div class="links-bar">
+  <a href="/docs/bom.html">📋 BOM</a>
+  <a href="/docs/chassis-drawing.html">📐 Chassis Drawing</a>
+</div>
+
+</body>
+</html>

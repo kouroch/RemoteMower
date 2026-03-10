@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>3-Wheel Differential Drive — Chassis Drawing</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 24px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 15px;
+    color: #58a6ff;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .meta {
+    text-align: center;
+    font-size: 10px;
+    color: #6e7681;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+  .drawings {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .view-block { display: flex; flex-direction: column; align-items: center; }
+  .view-label {
+    font-size: 10px;
+    color: #8b949e;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  svg { display: block; }
+</style>
+</head>
+<body>
+
+<h1>3-Wheel Differential Drive — Chassis</h1>
+<div class="meta">Rev 0.1 &nbsp;·&nbsp; Units: mm &nbsp;·&nbsp; Chassis: 300 × 220 × 2mm Al</div>
+
+<div class="drawings">
+
+  <!-- ========== TOP VIEW ========== -->
+  <div class="view-block">
+    <div class="view-label">Top View</div>
+    <svg width="580" height="530" style="background:#161b22; border:1px solid #21262d; border-radius:10px;">
+      <defs>
+        <!-- hatching for aluminum plate -->
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#21262d" stroke-width="1"/>
+        </pattern>
+      </defs>
+
+      <!-- ── CHASSIS PLATE ── -->
+      <rect x="180" y="90" width="220" height="300" rx="5"
+            fill="#1c2128" stroke="#388bfd" stroke-width="2"/>
+      <!-- subtle hatching overlay -->
+      <rect x="180" y="90" width="220" height="300" rx="5"
+            fill="url(#hatch)" opacity="0.3"/>
+
+      <!-- FORWARD label -->
+      <text x="290" y="72" text-anchor="middle" font-size="10" fill="#58a6ff" letter-spacing="2">▲  FORWARD</text>
+
+      <!-- ── FRONT CASTER ── -->
+      <!-- mounting plate -->
+      <rect x="264" y="98" width="52" height="34" rx="3" fill="#2d333b" stroke="#3fb950" stroke-width="1" stroke-dasharray="3,2"/>
+      <!-- swivel body -->
+      <circle cx="290" cy="120" r="14" fill="#2d333b" stroke="#3fb950" stroke-width="1.5"/>
+      <!-- ball -->
+      <circle cx="290" cy="120" r="6" fill="#161b22" stroke="#56d364" stroke-width="1"/>
+      <circle cx="292" cy="118" r="2" fill="#56d364" opacity="0.7"/>
+      <text x="290" y="146" text-anchor="middle" font-size="8" fill="#3fb950">CASTER  Ø38</text>
+
+      <!-- ── ARDUINO UNO Q ── -->
+      <rect x="207" y="168" width="85" height="56" rx="3"
+            fill="#12261e" stroke="#3fb950" stroke-width="1.5"/>
+      <!-- UNO shield headers (left + right) -->
+      <rect x="207" y="168" width="4" height="56" rx="1" fill="#238636" opacity="0.8"/>
+      <rect x="288" y="168" width="4" height="56" rx="1" fill="#238636" opacity="0.8"/>
+      <!-- dual-brain chips -->
+      <rect x="213" y="174" width="30" height="13" rx="2" fill="#1f4f2f" stroke="#3fb950" stroke-width="0.7"/>
+      <text x="228" y="183" text-anchor="middle" font-size="6.5" fill="#56d364">LINUX</text>
+      <rect x="248" y="174" width="32" height="13" rx="2" fill="#1a2f4f" stroke="#58a6ff" stroke-width="0.7"/>
+      <text x="264" y="183" text-anchor="middle" font-size="6.5" fill="#79c0ff">STM32</text>
+      <text x="249" y="200" text-anchor="middle" font-size="8.5" fill="#3fb950" font-weight="bold">ARDUINO UNO Q</text>
+      <text x="249" y="211" text-anchor="middle" font-size="7.5" fill="#2ea043">2GB · WiFi5 · eMMC</text>
+      <text x="249" y="221" text-anchor="middle" font-size="7" fill="#6e7681">68 × 53 mm</text>
+
+      <!-- ── CYTRON MDD10A ── -->
+      <rect x="210" y="240" width="72" height="52" rx="3"
+            fill="#271d00" stroke="#d29922" stroke-width="1.5"/>
+      <!-- terminal blocks left -->
+      <rect x="210" y="245" width="5" height="42" rx="1" fill="#b88600" opacity="0.8"/>
+      <!-- terminal blocks right -->
+      <rect x="277" y="245" width="5" height="42" rx="1" fill="#b88600" opacity="0.8"/>
+      <text x="246" y="260" text-anchor="middle" font-size="9" fill="#d29922" font-weight="bold">CYTRON</text>
+      <text x="246" y="272" text-anchor="middle" font-size="9" fill="#d29922" font-weight="bold">MDD10A</text>
+      <text x="246" y="284" text-anchor="middle" font-size="7.5" fill="#b88600">Dual 10A · 6–30V</text>
+
+      <!-- ── BATTERY PACK ── -->
+      <rect x="196" y="310" width="130" height="46" rx="3"
+            fill="#1c0f0f" stroke="#f85149" stroke-width="1.5"/>
+      <!-- terminal +/- -->
+      <rect x="196" y="318" width="8" height="12" rx="1" fill="#f85149" opacity="0.8"/>
+      <text x="200" y="327" text-anchor="middle" font-size="7" fill="white" font-weight="bold">+</text>
+      <rect x="196" y="334" width="8" height="12" rx="1" fill="#484f58" opacity="0.8"/>
+      <text x="200" y="343" text-anchor="middle" font-size="7" fill="white">–</text>
+      <text x="261" y="330" text-anchor="middle" font-size="9" fill="#f85149" font-weight="bold">BATTERY PACK</text>
+      <text x="261" y="342" text-anchor="middle" font-size="8" fill="#da3633">12V · 5Ah · Li-ion</text>
+      <text x="261" y="352" text-anchor="middle" font-size="7" fill="#6e7681">130 × 46 mm</text>
+
+      <!-- ── BUCK CONVERTER ── -->
+      <rect x="307" y="240" width="46" height="32" rx="2"
+            fill="#1a1035" stroke="#8957e5" stroke-width="1"/>
+      <text x="330" y="254" text-anchor="middle" font-size="8" fill="#bc8cff">BUCK</text>
+      <text x="330" y="265" text-anchor="middle" font-size="7.5" fill="#8957e5">12→5V 3A</text>
+
+      <!-- ── POWER SWITCH ── -->
+      <rect x="310" y="283" width="38" height="20" rx="3"
+            fill="#1f1500" stroke="#e3b341" stroke-width="1"/>
+      <text x="329" y="296" text-anchor="middle" font-size="7.5" fill="#e3b341">PWR SW</text>
+
+      <!-- ── E-STOP ── -->
+      <circle cx="355" cy="323" r="14" fill="#da3633" stroke="#ff7b72" stroke-width="1.5"/>
+      <circle cx="355" cy="323" r="8" fill="#b91c1c" stroke="#ffa198" stroke-width="1"/>
+      <text x="355" y="327" text-anchor="middle" font-size="7" fill="white" font-weight="bold">STOP</text>
+      <text x="355" y="348" text-anchor="middle" font-size="7.5" fill="#ff7b72">E-STOP</text>
+
+      <!-- ── MOTOR MOUNT BRACKETS ── -->
+      <!-- Left bracket (on chassis edge) -->
+      <rect x="167" y="345" width="13" height="35" rx="2" fill="#2d333b" stroke="#8b949e" stroke-width="1" stroke-dasharray="2,1"/>
+      <!-- Right bracket -->
+      <rect x="400" y="345" width="13" height="35" rx="2" fill="#2d333b" stroke="#8b949e" stroke-width="1" stroke-dasharray="2,1"/>
+
+      <!-- ── LEFT MOTOR ── -->
+      <rect x="96" y="341" width="71" height="38" rx="5"
+            fill="#1c2128" stroke="#388bfd" stroke-width="1.5"/>
+      <ellipse cx="104" cy="360" rx="7" ry="16" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+      <text x="140" y="357" text-anchor="middle" font-size="8" fill="#79c0ff">MOTOR L</text>
+      <text x="140" y="369" text-anchor="middle" font-size="7" fill="#388bfd">JGA37-520</text>
+      <!-- shaft -->
+      <line x1="167" y1="360" x2="180" y2="360" stroke="#58a6ff" stroke-width="2.5"/>
+
+      <!-- ── RIGHT MOTOR ── -->
+      <rect x="413" y="341" width="71" height="38" rx="5"
+            fill="#1c2128" stroke="#388bfd" stroke-width="1.5"/>
+      <ellipse cx="476" cy="360" rx="7" ry="16" fill="#21262d" stroke="#58a6ff" stroke-width="1"/>
+      <text x="440" y="357" text-anchor="middle" font-size="8" fill="#79c0ff">MOTOR R</text>
+      <text x="440" y="369" text-anchor="middle" font-size="7" fill="#388bfd">JGA37-520</text>
+      <!-- shaft -->
+      <line x1="400" y1="360" x2="413" y2="360" stroke="#58a6ff" stroke-width="2.5"/>
+
+      <!-- ── LEFT WHEEL (top view = tread rectangle) ── -->
+      <rect x="58" y="295" width="38" height="130" rx="6"
+            fill="#1c1c1c" stroke="#6e7681" stroke-width="2"/>
+      <!-- tread grooves -->
+      <line x1="62" y1="317" x2="92" y2="317" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="330" x2="92" y2="330" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="343" x2="92" y2="343" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="356" x2="92" y2="356" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="369" x2="92" y2="369" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="382" x2="92" y2="382" stroke="#484f58" stroke-width="1"/>
+      <line x1="62" y1="395" x2="92" y2="395" stroke="#484f58" stroke-width="1"/>
+      <!-- hub -->
+      <circle cx="77" cy="360" r="5" fill="#2d333b" stroke="#8b949e" stroke-width="1"/>
+
+      <!-- ── RIGHT WHEEL ── -->
+      <rect x="484" y="295" width="38" height="130" rx="6"
+            fill="#1c1c1c" stroke="#6e7681" stroke-width="2"/>
+      <line x1="488" y1="317" x2="518" y2="317" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="330" x2="518" y2="330" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="343" x2="518" y2="343" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="356" x2="518" y2="356" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="369" x2="518" y2="369" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="382" x2="518" y2="382" stroke="#484f58" stroke-width="1"/>
+      <line x1="488" y1="395" x2="518" y2="395" stroke="#484f58" stroke-width="1"/>
+      <circle cx="503" cy="360" r="5" fill="#2d333b" stroke="#8b949e" stroke-width="1"/>
+
+      <!-- Wheel labels -->
+      <text x="77" y="438" text-anchor="middle" font-size="8" fill="#6e7681">W-LEFT</text>
+      <text x="77" y="449" text-anchor="middle" font-size="8" fill="#6e7681">Ø130mm</text>
+      <text x="503" y="438" text-anchor="middle" font-size="8" fill="#6e7681">W-RIGHT</text>
+      <text x="503" y="449" text-anchor="middle" font-size="8" fill="#6e7681">Ø130mm</text>
+
+      <!-- ═══ DIMENSION LINES ═══ -->
+      <!-- Width: 220mm -->
+      <line x1="180" y1="468" x2="400" y2="468" stroke="#484f58" stroke-width="1"/>
+      <line x1="180" y1="463" x2="180" y2="473" stroke="#484f58" stroke-width="1"/>
+      <line x1="400" y1="463" x2="400" y2="473" stroke="#484f58" stroke-width="1"/>
+      <text x="290" y="482" text-anchor="middle" font-size="10" fill="#6e7681">220 mm (width)</text>
+
+      <!-- Length: 300mm -->
+      <line x1="545" y1="90" x2="545" y2="390" stroke="#484f58" stroke-width="1"/>
+      <line x1="540" y1="90" x2="550" y2="90" stroke="#484f58" stroke-width="1"/>
+      <line x1="540" y1="390" x2="550" y2="390" stroke="#484f58" stroke-width="1"/>
+      <text x="561" y="245" text-anchor="middle" font-size="10" fill="#6e7681"
+            transform="rotate(90,561,245)">300 mm (length)</text>
+
+      <!-- Track width (between wheel centers) -->
+      <line x1="77" y1="458" x2="503" y2="458" stroke="#30363d" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="290" y="495" text-anchor="middle" font-size="9" fill="#484f58">track ≈ 280 mm (wheel center to center)</text>
+
+      <!-- Rear axle line -->
+      <line x1="58" y1="360" x2="522" y2="360" stroke="#58a6ff" stroke-width="0.7" stroke-dasharray="5,4" opacity="0.4"/>
+      <text x="18" y="363" text-anchor="middle" font-size="7" fill="#388bfd" transform="rotate(-90,18,363)">AXLE</text>
+
+    </svg>
+  </div>
+
+  <!-- ========== RIGHT COLUMN: SIDE VIEW + LEGEND ========== -->
+  <div class="view-block" style="gap:20px; display:flex; flex-direction:column;">
+
+    <!-- SIDE VIEW -->
+    <div>
+      <div class="view-label">Side View</div>
+      <svg width="340" height="210" style="background:#161b22; border:1px solid #21262d; border-radius:10px;">
+
+        <!-- Ground -->
+        <line x1="20" y1="165" x2="320" y2="165" stroke="#30363d" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="290" y="178" font-size="8" fill="#484f58">GROUND</text>
+
+        <!-- Chassis plate (side = thin rect) -->
+        <rect x="70" y="100" width="200" height="10" rx="2" fill="#2d333b" stroke="#388bfd" stroke-width="1.5"/>
+
+        <!-- Components stack (schematic boxes) -->
+        <rect x="95" y="55" width="150" height="45" rx="2" fill="#1c2128" stroke="#21262d" stroke-width="1" stroke-dasharray="2,2"/>
+        <text x="170" y="73" text-anchor="middle" font-size="8" fill="#484f58">UNO Q + Driver</text>
+        <text x="170" y="85" text-anchor="middle" font-size="8" fill="#484f58">+ Battery</text>
+        <text x="170" y="95" text-anchor="middle" font-size="7" fill="#30363d">~70mm tall</text>
+
+        <!-- Front caster (side view = circle) -->
+        <circle cx="100" cy="143" r="20" fill="#1c1c1c" stroke="#3fb950" stroke-width="1.5"/>
+        <circle cx="100" cy="143" r="3" fill="#3fb950"/>
+        <!-- caster fork -->
+        <line x1="100" y1="100" x2="100" y2="123" stroke="#3fb950" stroke-width="2"/>
+
+        <!-- Rear drive wheel (side view = circle) -->
+        <circle cx="248" cy="143" r="22" fill="#1c1c1c" stroke="#6e7681" stroke-width="2"/>
+        <circle cx="248" cy="143" r="15" fill="none" stroke="#484f58" stroke-width="1" stroke-dasharray="3,3"/>
+        <circle cx="248" cy="143" r="4" fill="#2d333b" stroke="#8b949e" stroke-width="1"/>
+
+        <!-- Motor (behind wheel, stub) -->
+        <rect x="258" y="133" width="30" height="20" rx="2" fill="#1c2128" stroke="#388bfd" stroke-width="1" opacity="0.7"/>
+
+        <!-- Ground clearance dimension -->
+        <line x1="38" y1="110" x2="38" y2="165" stroke="#484f58" stroke-width="1"/>
+        <line x1="33" y1="110" x2="43" y2="110" stroke="#484f58" stroke-width="1"/>
+        <line x1="33" y1="165" x2="43" y2="165" stroke="#484f58" stroke-width="1"/>
+        <text x="26" y="141" text-anchor="middle" font-size="8" fill="#6e7681" transform="rotate(-90,26,141)">~80mm</text>
+
+        <!-- Labels -->
+        <text x="100" y="190" text-anchor="middle" font-size="8" fill="#3fb950">CASTER</text>
+        <text x="100" y="200" text-anchor="middle" font-size="7" fill="#3fb950">(front)</text>
+        <text x="248" y="190" text-anchor="middle" font-size="8" fill="#6e7681">DRIVE WHEEL</text>
+        <text x="248" y="200" text-anchor="middle" font-size="7" fill="#6e7681">(rear ×2)</text>
+
+        <!-- Forward arrow -->
+        <text x="75" y="30" font-size="9" fill="#58a6ff">◄ FORWARD</text>
+
+      </svg>
+    </div>
+
+    <!-- LEGEND -->
+    <div>
+      <div class="view-label">Component Key</div>
+      <svg width="340" height="195" style="background:#161b22; border:1px solid #21262d; border-radius:10px;">
+
+        <rect x="16" y="14" width="14" height="10" rx="1" fill="#12261e" stroke="#3fb950" stroke-width="1.2"/>
+        <text x="38" y="23" font-size="10" fill="#c9d1d9">Arduino UNO Q · 2GB (Linux + STM32)</text>
+
+        <rect x="16" y="33" width="14" height="10" rx="1" fill="#271d00" stroke="#d29922" stroke-width="1.2"/>
+        <text x="38" y="42" font-size="10" fill="#c9d1d9">Cytron MDD10A (dual 10A)</text>
+
+        <rect x="16" y="52" width="14" height="10" rx="1" fill="#1c0f0f" stroke="#f85149" stroke-width="1.2"/>
+        <text x="38" y="61" font-size="10" fill="#c9d1d9">12V 5Ah Li-ion Battery</text>
+
+        <rect x="16" y="71" width="14" height="10" rx="1" fill="#1c2128" stroke="#388bfd" stroke-width="1.2"/>
+        <text x="38" y="80" font-size="10" fill="#c9d1d9">DC Gear Motors (JGA37-520 ×2)</text>
+
+        <rect x="16" y="90" width="14" height="10" rx="2" fill="#1c1c1c" stroke="#6e7681" stroke-width="1.2"/>
+        <text x="38" y="99" font-size="10" fill="#c9d1d9">Drive Wheels Ø130mm ×2</text>
+
+        <circle cx="23" cy="118" r="7" fill="#2d333b" stroke="#3fb950" stroke-width="1.2"/>
+        <text x="38" y="122" font-size="10" fill="#c9d1d9">Front Ball Caster Ø38mm</text>
+
+        <circle cx="23" cy="140" r="7" fill="#da3633" stroke="#ff7b72" stroke-width="1.2"/>
+        <text x="38" y="144" font-size="10" fill="#c9d1d9">Emergency Stop (NC)</text>
+
+        <rect x="16" y="153" width="14" height="10" rx="1" fill="#1a1035" stroke="#8957e5" stroke-width="1.2"/>
+        <text x="38" y="162" font-size="10" fill="#c9d1d9">Buck Conv. 12V→5V (UNO Q power)</text>
+
+        <rect x="16" y="172" width="14" height="10" rx="1" fill="#1f1500" stroke="#e3b341" stroke-width="1.2"/>
+        <text x="38" y="181" font-size="10" fill="#c9d1d9">Main Power Switch</text>
+
+      </svg>
+    </div>
+
+  </div><!-- end right column -->
+
+</div><!-- end drawings -->
+
+</body>
+</html>

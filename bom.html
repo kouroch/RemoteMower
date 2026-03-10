@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Remote Mower — BOM</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 32px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header { margin-bottom: 32px; }
+  h1 { font-size: 22px; color: #f0f6fc; margin-bottom: 6px; }
+  .meta { font-size: 13px; color: #6e7681; }
+  .meta span { color: #58a6ff; }
+
+  .section { margin-bottom: 36px; }
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8b949e;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6e7681;
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+  }
+  tbody tr { border-bottom: 1px solid #161b22; transition: background 0.1s; }
+  tbody tr:hover { background: #161b22; }
+  td { padding: 10px 12px; vertical-align: middle; }
+
+  td.num { color: #6e7681; font-size: 12px; width: 32px; }
+  td.component { font-weight: 500; color: #e6edf3; }
+  td.component .sub { font-size: 11px; color: #6e7681; margin-top: 2px; }
+  td.price { color: #3fb950; font-weight: 600; white-space: nowrap; }
+  td.link a {
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 12px;
+    border: 1px solid #1f6feb;
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  td.link a:hover { background: #1f6feb22; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .badge-linux { background: #1f4f2f; color: #56d364; border: 1px solid #3fb950; }
+  .badge-mcu   { background: #1a2f4f; color: #79c0ff; border: 1px solid #388bfd; }
+  .badge-safety { background: #4f1a1a; color: #ff7b72; border: 1px solid #f85149; }
+
+  .total-row td {
+    padding: 14px 12px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #f0f6fc;
+    border-top: 2px solid #30363d;
+  }
+  .total-row td.price { color: #3fb950; font-size: 17px; }
+
+  .arch {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .arch h3 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 16px; }
+  .brain-grid { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  .brain-card {
+    flex: 1; min-width: 200px;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 13px;
+  }
+  .brain-card.linux { background: #1f4f2f22; border: 1px solid #3fb950; }
+  .brain-card.mcu   { background: #1a2f4f22; border: 1px solid #388bfd; }
+  .brain-card .label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .brain-card.linux .label { color: #3fb950; }
+  .brain-card.mcu   .label { color: #58a6ff; }
+  .brain-card .chip { font-size: 12px; color: #8b949e; margin-bottom: 8px; }
+  .brain-card ul { padding-left: 16px; font-size: 12px; color: #c9d1d9; line-height: 1.7; }
+
+  .wiring {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #8b949e;
+    line-height: 1.8;
+    margin-top: 16px;
+  }
+  .wiring .hl { color: #58a6ff; }
+  .wiring .safety { color: #f85149; }
+  .wiring .motor { color: #d29922; }
+
+  .links-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #21262d;
+  }
+  .links-bar a {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+  }
+  .links-bar a:hover { border-color: #58a6ff; color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🤖 Remote Mower — Test Vehicle BOM</h1>
+  <div class="meta">Rev 0.2 &nbsp;·&nbsp; <span>2026-02-24</span> &nbsp;·&nbsp; 3-Wheel Differential Drive &nbsp;·&nbsp; Chassis: 300 × 220 × 2mm Al</div>
+</header>
+
+<!-- ARCHITECTURE -->
+<div class="arch">
+  <h3>Architecture — Arduino UNO Q Dual-Brain</h3>
+  <div class="brain-grid">
+    <div class="brain-card linux">
+      <div class="label">🐧 Linux Brain</div>
+      <div class="chip">Qualcomm Dragonwing QRB2210 · quad-core 2.0 GHz</div>
+      <ul>
+        <li>Debian OS + Python</li>
+        <li>WebSocket server + web control UI</li>
+        <li>WiFi 5 · Bluetooth 5.1</li>
+        <li>AI / computer vision (future)</li>
+      </ul>
+    </div>
+    <div class="brain-card mcu">
+      <div class="label">⚡ Real-Time Brain</div>
+      <div class="chip">STM32U585 MCU · Arduino sketches</div>
+      <ul>
+        <li>Motor PWM → Cytron MDD10A</li>
+        <li>Safety watchdog (heartbeat monitor)</li>
+        <li>E-stop logic</li>
+        <li>If heartbeat missed ×3 → motors off</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wiring">
+Battery (12V)<br>
+&nbsp; ├── <span class="safety">[E-Stop NC]</span> ──→ <span class="safety">[Main Switch]</span> ──→ <span class="motor">Cytron MDD10A</span> ──→ Motor L (M1)<br>
+&nbsp; │ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;└──→ Motor R (M2)<br>
+&nbsp; └── [Buck 12→5V] ──→ <span class="hl">UNO Q (5V USB-C)</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── STM32 PWM GPIO ──→ <span class="motor">MDD10A IN1/IN2/IN3/IN4</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── Linux WiFi ──→ WebSocket control app
+  </div>
+</div>
+
+<!-- ELECTRONICS -->
+<div class="section">
+  <h2>Electronics</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Component</th><th>Price</th><th>Link</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td class="component">
+          Arduino UNO Q 2GB
+          <span class="badge badge-linux">LINUX</span>
+          <span class="badge badge-mcu">STM32</span>
+          <div class="sub">Qualcomm QRB2210 + STM32U585 · 16GB eMMC · WiFi5 · BT5.1</div>
+        </td>
+        <td class="price">$50</td>
+        <td class="link"><a href="https://store.arduino.cc/products/uno-q" target="_blank">arduino.cc ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td class="component">
+          Cytron MDD10A Motor Driver
+          <div class="sub">Dual channel · 10A per channel · 6–30V · PWM</div>
+        </td>
+        <td class="price">$30</td>
+        <td class="link"><a href="https://www.cytron.io/p-10amp-5v-30v-dc-motor-driver-2-channels" target="_blank">cytron.io ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td class="component">
+          12V 5Ah Li-ion Battery Pack
+          <div class="sub">XT60 connector · RC-style pack</div>
+        </td>
+        <td class="price">$35</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=12V+5Ah+lithium+ion+battery+XT60+RC" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td class="component">
+          DC-DC Buck Converter
+          <div class="sub">12V → 5V · 3A · LM2596 or similar</div>
+        </td>
+        <td class="price">$8</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=LM2596+DC+DC+buck+converter+12V+to+5V" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td class="component">
+          Main Rocker Switch
+          <div class="sub">20A rated · panel mount</div>
+        </td>
+        <td class="price">$5</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=20A+rocker+power+switch+panel+mount" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">6</td>
+        <td class="component">
+          Emergency Stop Button
+          <span class="badge badge-safety">SAFETY</span>
+          <div class="sub">Red mushroom · normally-closed (NC) · wired in series on 12V line</div>
+        </td>
+        <td class="price">$8</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=emergency+stop+button+mushroom+normally+closed" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">7</td>
+        <td class="component">
+          XT60 Connector Pair
+          <div class="sub">Male + female · battery disconnect</div>
+        </td>
+        <td class="price">$5</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=XT60+male+female+connector+pair" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">8</td>
+        <td class="component">
+          Jumper Wires + Terminal Blocks
+          <div class="sub">Assorted kit</div>
+        </td>
+        <td class="price">$10</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=jumper+wire+kit+terminal+block+assortment" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="2">Electronics subtotal</td>
+        <td class="price">$151</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MECHANICAL -->
+<div class="section">
+  <h2>Mechanical</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Component</th><th>Price</th><th>Link</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">9</td>
+        <td class="component">
+          12V DC Gear Motors ×2
+          <div class="sub">JGA37-520 · ~150 RPM · D-shaft · rear drive wheels</div>
+        </td>
+        <td class="price">$30</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=JGA37-520+12V+150RPM+DC+gear+motor" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">10</td>
+        <td class="component">
+          Rubber Wheels 90mm (pair)
+          <div class="sub">Pololu · D-shaft hub · rear drive</div>
+        </td>
+        <td class="price">$10</td>
+        <td class="link"><a href="https://www.pololu.com/product/1435" target="_blank">Pololu #1435 ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">11</td>
+        <td class="component">
+          Ball Caster ½″ Metal ×1
+          <div class="sub">Pololu · front free-rolling wheel</div>
+        </td>
+        <td class="price">$3</td>
+        <td class="link"><a href="https://www.pololu.com/product/953" target="_blank">Pololu #953 ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">12</td>
+        <td class="component">
+          Aluminum Chassis Plate
+          <div class="sub">2mm thick · 300 × 220mm</div>
+        </td>
+        <td class="price">$15</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=aluminum+sheet+2mm+300x220" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">13</td>
+        <td class="component">
+          Motor Mount Clamps ×2
+          <div class="sub">37mm bore · L-bracket style</div>
+        </td>
+        <td class="price">$10</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=37mm+motor+mount+bracket+clamp" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">14</td>
+        <td class="component">
+          M3/M4 Hardware Kit
+          <div class="sub">Screws · nuts · standoffs assortment</div>
+        </td>
+        <td class="price">$10</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=M3+M4+screw+nut+standoff+assortment+kit" target="_blank">Amazon ↗</a></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="2">Mechanical subtotal</td>
+        <td class="price">$78</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- GRAND TOTAL -->
+<table style="margin-bottom:32px;">
+  <tbody>
+    <tr class="total-row" style="font-size:18px;">
+      <td style="padding:16px 12px; font-size:16px; font-weight:700; color:#f0f6fc;">💰 Grand Total</td>
+      <td class="price" style="padding:16px 12px; font-size:20px;">~$229</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="links-bar">
+  <a href="/chassis-drawing.html">📐 Chassis Drawing</a>
+</div>
+
+</body>
+</html>
