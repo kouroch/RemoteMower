@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Remote Mower — Lawn Mower Platform BOM</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 32px 24px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  header { margin-bottom: 32px; }
+  h1 { font-size: 22px; color: #f0f6fc; margin-bottom: 6px; }
+  .meta { font-size: 13px; color: #6e7681; }
+  .meta span { color: #58a6ff; }
+
+  .section { margin-bottom: 36px; }
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #8b949e;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    text-align: left;
+    padding: 8px 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6e7681;
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+  }
+  tbody tr { border-bottom: 1px solid #161b22; transition: background 0.1s; }
+  tbody tr:hover { background: #161b22; }
+  td { padding: 10px 12px; vertical-align: middle; }
+
+  td.num { color: #6e7681; font-size: 12px; width: 32px; }
+  td.component { font-weight: 500; color: #e6edf3; }
+  td.component .sub { font-size: 11px; color: #6e7681; margin-top: 2px; }
+  td.price { color: #3fb950; font-weight: 600; white-space: nowrap; }
+  td.link a {
+    color: #58a6ff;
+    text-decoration: none;
+    font-size: 12px;
+    border: 1px solid #1f6feb;
+    border-radius: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+  td.link a:hover { background: #1f6feb22; }
+
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .badge-linux { background: #1f4f2f; color: #56d364; border: 1px solid #3fb950; }
+  .badge-mcu   { background: #1a2f4f; color: #79c0ff; border: 1px solid #388bfd; }
+  .badge-safety { background: #4f1a1a; color: #ff7b72; border: 1px solid #f85149; }
+  .badge-reused { background: #1f4f2f; color: #56d364; border: 1px solid #3fb950; }
+  .badge-order  { background: #1e2030; color: #8b949e; border: 1px solid #30363d; }
+
+  td.status { white-space: nowrap; font-size: 13px; }
+
+  .total-row td {
+    padding: 14px 12px;
+    font-weight: 700;
+    font-size: 15px;
+    color: #f0f6fc;
+    border-top: 2px solid #30363d;
+  }
+  .total-row td.price { color: #3fb950; font-size: 17px; }
+
+  .note {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-left: 3px solid #d29922;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #8b949e;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .note strong { color: #e6edf3; }
+
+  .links-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #21262d;
+  }
+  .links-bar a {
+    color: #8b949e;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+  }
+  .links-bar a:hover { border-color: #58a6ff; color: #58a6ff; }
+</style>
+</head>
+<body>
+<style id="site-nav-css">*{box-sizing:border-box}#site-nav{display:flex;align-items:center;background:#161b22;border-bottom:1px solid #21262d;padding:0 20px;height:44px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;position:sticky;top:0;z-index:1000;}#site-nav .nav-brand{font-size:13px;font-weight:700;color:#f0f6fc;margin-right:24px;text-decoration:none;white-space:nowrap;}#site-nav .nav-links{display:flex;gap:2px;}#site-nav .nav-links a{font-size:12px;color:#8b949e;text-decoration:none;padding:6px 12px;border-radius:5px;white-space:nowrap;}#site-nav .nav-links a:hover{color:#f0f6fc;background:#21262d;}#site-nav .nav-links a.active{color:#58a6ff;background:#1c3052;}#site-nav .nav-sep{color:#30363d;margin:0 4px;font-size:11px;}body{margin-top:0!important;padding-top:0!important;}</style>
+<nav id="site-nav"><a class="nav-brand" href="/">🤖 Kourosh App Server</a><div class="nav-links"><a href="/">Home</a><span class="nav-sep">|</span><a href="/tasktracker/">TaskTracker</a><span class="nav-sep">|</span><a href="/docs/bom.html">BOM</a><span class="nav-sep">|</span><a href="/docs/bom-lawn-mower.html" class="active">Mower BOM</a><span class="nav-sep">|</span><a href="/docs/chassis-drawing.html">Chassis</a><span class="nav-sep">|</span><a href="/docs/wiring-diagram.html">Wiring</a></div></nav>
+
+<header>
+  <h1>🌿 Remote Mower — Lawn Mower Platform BOM</h1>
+  <div class="meta">Rev 1.0 &nbsp;·&nbsp; <span>2026-03-17</span> &nbsp;·&nbsp; Target: 50 lb payload on grass &nbsp;·&nbsp; Outdoor Differential Drive</div>
+</header>
+
+<div class="note">
+  Upgrade path from the test vehicle (bench prototype) to a real lawn mower platform.
+  <span class="badge badge-reused">♻️ Reused</span> items carry over from the test vehicle BOM unchanged.
+  <span class="badge badge-order">🔲 To Order</span> items are new purchases for this platform.
+  Brain: Arduino UNO Q 4GB (dual-brain: Qualcomm Linux + STM32 MCU).
+</div>
+
+<!-- TORQUE JUSTIFICATION -->
+<div class="section">
+  <h2>Torque Justification</h2>
+  <table>
+    <thead>
+      <tr><th>Parameter</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="component">Total platform weight</td><td>~50 lbs (23 kg)</td></tr>
+      <tr><td class="component">Grass rolling resistance coefficient</td><td>0.25–0.3</td></tr>
+      <tr><td class="component">Required drive force (total)</td><td>23 kg × 9.8 × 0.3 = <strong style="color:#f0f6fc;">68 N</strong></td></tr>
+      <tr><td class="component">Per motor (2 drive wheels)</td><td><strong style="color:#f0f6fc;">34 N</strong></td></tr>
+      <tr><td class="component">Wheel radius (150 mm)</td><td>0.075 m</td></tr>
+      <tr><td class="component">Required torque per motor</td><td>34 N × 0.075 m = <strong style="color:#3fb950;">~2.5 N·m</strong></td></tr>
+      <tr><td class="component">Safety margin (2×)</td><td><strong style="color:#3fb950;">~5 N·m per motor</strong></td></tr>
+      <tr class="total-row"><td colspan="2" style="font-size:13px; color:#d29922;">⚠️ Current JGA37-520 at 150 RPM produces ~0.7 N·m — 7× too weak for this application.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ELECTRONICS -->
+<div class="section">
+  <h2>Electronics</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Component</th><th>Spec</th><th>Price</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">1</td>
+        <td class="component">
+          Arduino UNO Q 4GB
+          <span class="badge badge-linux">LINUX</span>
+          <span class="badge badge-mcu">STM32</span>
+          <div class="sub">Qualcomm QRB2210 + STM32U585 · WiFi5/BT5.1</div>
+        </td>
+        <td>$59 from test vehicle</td>
+        <td class="price">$59</td>
+        <td class="status"><span class="badge badge-reused">♻️ Reused</span></td>
+      </tr>
+      <tr>
+        <td class="num">2</td>
+        <td class="component">
+          Flysky FS-i6X + FS-iA6B
+          <span class="badge badge-mcu">RC</span>
+          <div class="sub">6-ch RC transmitter + receiver, iBUS protocol</div>
+        </td>
+        <td>6-ch 2.4GHz AFHDS 2A · iBUS</td>
+        <td class="price">~$50</td>
+        <td class="status"><span class="badge badge-reused">♻️ Reused</span></td>
+      </tr>
+      <tr>
+        <td class="num">3</td>
+        <td class="component">
+          <strong>Cytron MDD20A Motor Driver</strong>
+          <div class="sub">Upgrade from MDD10A — handles higher stall current on grass</div>
+        </td>
+        <td>Dual ch · <strong>20A/ch</strong> · 6–30V · PWM</td>
+        <td class="price">~$55</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">4</td>
+        <td class="component">
+          <strong>24V 10Ah LiFePO4 Battery</strong>
+          <div class="sub">Deep cycle · safer chemistry for outdoor use</div>
+        </td>
+        <td>XT60 · LiFePO4 · deep cycle</td>
+        <td class="price">~$80</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">5</td>
+        <td class="component">
+          <strong>DC-DC Buck 24V → 5V 5A</strong>
+          <div class="sub">Powers UNO Q + receiver from 24V rail</div>
+        </td>
+        <td>24V → 5V · 5A</td>
+        <td class="price">~$12</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">6</td>
+        <td class="component">
+          Main Rocker Switch
+          <div class="sub">Panel mount · higher rating for outdoor</div>
+        </td>
+        <td>30A rated · panel mount</td>
+        <td class="price">~$8</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">7</td>
+        <td class="component">
+          E-Stop Button
+          <span class="badge badge-safety">SAFETY</span>
+          <div class="sub">IP65 rated for outdoor use · NC · wired in series on battery line</div>
+        </td>
+        <td>Red mushroom · NC · IP65</td>
+        <td class="price">~$12</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">8</td>
+        <td class="component">
+          XT60 Connector Pair
+          <div class="sub">Battery disconnect</div>
+        </td>
+        <td>Male + female pair</td>
+        <td class="price">~$5</td>
+        <td class="status"><span class="badge badge-reused">♻️ Reused</span></td>
+      </tr>
+      <tr>
+        <td class="num">9</td>
+        <td class="component">
+          14 AWG Silicone Wire (10 ft)
+          <div class="sub">High-current motor wiring</div>
+        </td>
+        <td>14 AWG · silicone jacket</td>
+        <td class="price">~$10</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">10</td>
+        <td class="component">
+          Waterproof Terminal Blocks
+          <div class="sub">Outdoor wiring connections</div>
+        </td>
+        <td>IP65 · outdoor rated</td>
+        <td class="price">~$12</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="3">Electronics subtotal</td>
+        <td class="price">~$293</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MOTORS & DRIVE -->
+<div class="section">
+  <h2>Motors &amp; Drive</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Component</th><th>Spec</th><th>Price</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">11</td>
+        <td class="component">
+          <strong>High-Torque Gear Motors ×2</strong>
+          <div class="sub">Same form factor as test vehicle — higher torque gearing · rear drive</div>
+        </td>
+        <td>12V 60RPM · JGA37-520 variant · <strong>~3 N·m</strong></td>
+        <td class="price">~$45</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">12</td>
+        <td class="component">
+          <strong>Pneumatic Wheels 200mm ×2</strong>
+          <div class="sub">Inflatable rubber tire · D-shaft or keyway hub · grass traction</div>
+        </td>
+        <td>200mm · pneumatic · D-shaft hub</td>
+        <td class="price">~$35</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">13</td>
+        <td class="component">
+          <strong>Heavy-Duty Front Casters ×2</strong>
+          <div class="sub">Swivel · rated for 30+ lbs each</div>
+        </td>
+        <td>3″–4″ swivel · 30+ lb rated each</td>
+        <td class="price">~$20</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="3">Motors &amp; drive subtotal</td>
+        <td class="price">~$100</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note" style="margin-top:16px; margin-bottom:0;">
+    <strong>Alternative motors worth considering:</strong><br>
+    · <strong>EMG30 (12V 30RPM, 3.5 N·m)</strong> — outdoor robot standard, ~$45/each, excellent documentation<br>
+    · <strong>Greartisan 12V 50RPM high-torque</strong> — Amazon available, ~$20/each, good value<br>
+    · <strong>BaneBots RS-775 + 64:1 gearbox</strong> — ~4 N·m, FRC-grade, ~$40/each
+  </div>
+</div>
+
+<!-- CHASSIS & MECHANICAL -->
+<div class="section">
+  <h2>Chassis &amp; Mechanical</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Component</th><th>Spec</th><th>Price</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="num">14</td>
+        <td class="component">
+          <strong>Steel Chassis Plate</strong>
+          <div class="sub">Replaces Al plate — handles outdoor stress and weight load</div>
+        </td>
+        <td>3mm steel · 500×400mm</td>
+        <td class="price">~$30</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">15</td>
+        <td class="component">
+          Motor Mount Clamps ×2
+          <div class="sub">Same as test vehicle</div>
+        </td>
+        <td>37mm bore · L-bracket style</td>
+        <td class="price">~$10</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">16</td>
+        <td class="component">
+          M4/M5 Stainless Hardware Kit
+          <div class="sub">Outdoor-rated to resist corrosion</div>
+        </td>
+        <td>Stainless · screws, nuts, standoffs</td>
+        <td class="price">~$15</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">17</td>
+        <td class="component">
+          <strong>Electronics Enclosure (IP65)</strong>
+          <div class="sub">Weatherproof box for UNO Q + motor driver</div>
+        </td>
+        <td>IP65 · weatherproof · vented</td>
+        <td class="price">~$20</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr>
+        <td class="num">18</td>
+        <td class="component">
+          <strong>Mower Deck Mount Hardware</strong>
+          <div class="sub">Custom brackets to attach actual mower deck (TBD design)</div>
+        </td>
+        <td>Custom brackets · TBD geometry</td>
+        <td class="price">~$25</td>
+        <td class="status"><span class="badge badge-order">🔲 Order</span></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="3">Chassis subtotal</td>
+        <td class="price">~$100</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- COST SUMMARY -->
+<div class="section">
+  <h2>Cost Summary</h2>
+  <table>
+    <thead>
+      <tr><th>Category</th><th>Amount</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="component"><span class="badge badge-reused">♻️ Reused</span> &nbsp; Carried over from test vehicle</td>
+        <td class="price">~$110</td>
+      </tr>
+      <tr>
+        <td class="component"><span class="badge badge-order">🔲 Order</span> &nbsp; Electronics (new purchases)</td>
+        <td class="price">~$183</td>
+      </tr>
+      <tr>
+        <td class="component"><span class="badge badge-order">🔲 Order</span> &nbsp; Motors &amp; Drive</td>
+        <td class="price">~$100</td>
+      </tr>
+      <tr>
+        <td class="component"><span class="badge badge-order">🔲 Order</span> &nbsp; Chassis &amp; Mechanical</td>
+        <td class="price">~$100</td>
+      </tr>
+      <tr class="total-row">
+        <td style="font-size:15px;">💸 Total new spend</td>
+        <td class="price" style="font-size:17px;">~$383</td>
+      </tr>
+      <tr class="total-row" style="background:#161b22;">
+        <td style="font-size:16px; color:#f0f6fc;">💰 Total platform cost (incl. reused)</td>
+        <td class="price" style="font-size:20px;">~$493</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- KEY UPGRADES -->
+<div class="section">
+  <h2>Key Upgrades vs Test Vehicle</h2>
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Test Vehicle</th><th>Lawn Mower Platform</th><th>Reason</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="component">Motors</td>
+        <td style="color:#6e7681; font-size:13px;">JGA37-520 150RPM · ~0.7 N·m</td>
+        <td style="color:#3fb950; font-size:13px;">JGA37-520 60RPM · ~3 N·m</td>
+        <td style="font-size:13px; color:#8b949e;">4× torque for grass</td>
+      </tr>
+      <tr>
+        <td class="component">Motor Driver</td>
+        <td style="color:#6e7681; font-size:13px;">MDD10A (10A/ch)</td>
+        <td style="color:#3fb950; font-size:13px;">MDD20A (20A/ch)</td>
+        <td style="font-size:13px; color:#8b949e;">Higher stall current on grass</td>
+      </tr>
+      <tr>
+        <td class="component">Wheels</td>
+        <td style="color:#6e7681; font-size:13px;">90mm rubber</td>
+        <td style="color:#3fb950; font-size:13px;">200mm pneumatic</td>
+        <td style="font-size:13px; color:#8b949e;">Traction + ground clearance</td>
+      </tr>
+      <tr>
+        <td class="component">Battery</td>
+        <td style="color:#6e7681; font-size:13px;">12V 5Ah Li-ion</td>
+        <td style="color:#3fb950; font-size:13px;">24V 10Ah LiFePO4</td>
+        <td style="font-size:13px; color:#8b949e;">Runtime + outdoor safety</td>
+      </tr>
+      <tr>
+        <td class="component">Chassis</td>
+        <td style="color:#6e7681; font-size:13px;">2mm Al · 300×220mm</td>
+        <td style="color:#3fb950; font-size:13px;">3mm steel · 500×400mm</td>
+        <td style="font-size:13px; color:#8b949e;">Weight + durability</td>
+      </tr>
+      <tr>
+        <td class="component">Wiring</td>
+        <td style="color:#6e7681; font-size:13px;">Jumper wires</td>
+        <td style="color:#3fb950; font-size:13px;">14 AWG silicone</td>
+        <td style="font-size:13px; color:#8b949e;">Current capacity</td>
+      </tr>
+      <tr>
+        <td class="component">Enclosure</td>
+        <td style="color:#6e7681; font-size:13px;">Open / none</td>
+        <td style="color:#3fb950; font-size:13px;">IP65 weatherproof box</td>
+        <td style="font-size:13px; color:#8b949e;">Rain / moisture protection</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="links-bar">
+  <a href="/docs/bom.html">📋 Test Vehicle BOM</a>
+  <a href="/docs/chassis-drawing.html">📐 Chassis Drawing</a>
+  <a href="/docs/wiring-diagram.html">⚡ Wiring Diagram</a>
+</div>
+
+</body>
+</html>
