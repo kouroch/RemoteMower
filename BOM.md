@@ -1,5 +1,5 @@
 # Remote Mower — Test Vehicle BOM
-**Rev 0.5 · 2026-03-02**
+**Rev 1.0 · 2026-03-17**
 
 ## Reference Design
 - **TI Robotic Lawn Mower**: https://www.ti.com/solution/robotic-lawn-mower?variantid=34873&subsystemid=13901#block-diagram
@@ -19,7 +19,9 @@ Brain: Arduino UNO Q 4GB (dual-brain: Qualcomm Linux + STM32 MCU)
 | 2 | Arduino Plug and Make Kit | Kit with UNO R4 WiFi + Modulino modules (bonus) | $87.40 (SKU AKX00069) | ✅ Received |
 | 3 | Arduino Nano ESP32 with headers | ESP32-S3, WiFi/BT, 16MB flash | $19.30 (SKU ABX00083) | ✅ Received |
 | 4 | Nano Connector Carrier | Carrier board for Nano | $11.80 (SKU ASX00061) | ✅ Received |
-| 5 | Modulino Joystick | X/Y analog + button, Modulino form factor | $15.23 (SKU ABX00135) | ✅ Received |
+| 5 | Modulino Joystick | X/Y analog + button, Modulino form factor | $15.23 (SKU ABX00135) | ✅ Received (repurposed — not used in V3 control) |
+| 5b | Flysky FS-i6X Transmitter | 6-ch 2.4GHz AFHDS 2A, LCD screen | ~$50 | ✅ Received |
+| 5c | Flysky FS-iA6B Receiver | 6-ch, PWM + iBUS output, 3.3V signal | (included) | ✅ Received |
 | 6 | Cytron MDD10A Motor Driver | Dual channel, 10A/ch, 6–30V, PWM | ~$30 | ✅ Received |
 | 7 | 12V Li-ion Battery Pack | 5Ah, XT60 connector | ~$35 | ✅ Received |
 | 8 | DC-DC Buck Converter | 12V → 5V 3A (powers UNO Q) | ~$8 | ✅ Received |
@@ -69,17 +71,24 @@ Brain: Arduino UNO Q 4GB (dual-brain: Qualcomm Linux + STM32 MCU)
 - **Arduino Plug and Make Kit + Nano ESP32 + Nano Connector Carrier:** Ordered with future projects in mind, not exclusively for the test vehicle. The Modulino ecosystem and Nano ESP32 are versatile enough to serve as building blocks across multiple builds. Will be allocated to specific projects as they emerge.
 - **Learning goal:** This entire project is also a learning exercise — embedded systems, motor control, real-time MCUs, Linux on hardware. No deadline, no pressure. Explore and figure it out.
 
-### Wiring Summary (Phase 1)
+### Wiring Summary (V3 — RC Control)
 ```
-Modulino Joystick → STM32 ADC (A0/A1)   [X axis → turn, Y axis → speed]
+FS-iA6B Receiver
+  ├── VCC ←── Buck 5V rail
+  ├── GND ←── Common GND
+  └── iBUS ──→ STM32 Serial1 RX (D0)   [single wire, all 6 channels]
 
 Battery (12V)
   ├── [E-Stop, NC] ──→ [Main Switch] ──→ Cytron MDD10A ──→ Motor L (M1)
   │                                                     └──→ Motor R (M2)
   └── [Buck 12→5V] ──→ UNO Q (5V USB-C)
-                         └── STM32 ADC ←── Joystick (X/Y)
-                         └── STM32 GPIO PWM ──→ MDD10A IN1/IN2/IN3/IN4
+                         └── STM32 Serial1 RX ←── FS-iA6B iBUS
+                         └── STM32 GPIO PWM ──→ MDD10A DIR1/PWM1/DIR2/PWM2
                          └── Linux side ──→ (idle in Phase 1)
+
+Channel mapping:
+  CH3 (left stick vertical)   → throttle (forward/back)
+  CH4 (left stick horizontal) → rudder (turn left/right)
 ```
 
 ### Safety Watchdog Design

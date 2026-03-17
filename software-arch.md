@@ -1,5 +1,5 @@
 # Remote Mower — Software Architecture
-**Rev 0.1 · 2026-02-24**
+**Rev 1.0 · 2026-03-17**
 Brain: Arduino UNO Q (Qualcomm QRB2210 Linux + STM32U585 MCU)
 
 ---
@@ -7,7 +7,7 @@ Brain: Arduino UNO Q (Qualcomm QRB2210 Linux + STM32U585 MCU)
 ## Overview: Phased Approach
 
 ```
-Phase 1  Joystick → STM32 ADC → Motors           (hardware bringup, bench test)
+Phase 1  RC Receiver (iBUS) → STM32 → Motors     (hardware bringup, bench test)
 Phase 2  Linux serial → STM32 → Motors            (WiFi/WebSocket plumbing)
 Phase 3  Web UI → Linux WebSocket → STM32 → Motors (full remote control)
 ```
@@ -17,86 +17,65 @@ command *source* changes.
 
 ---
 
-## Phase 1 — Joystick Control (STM32 Only)
+## Phase 1 — RC Receiver Control (STM32 Only)
 
 ### Goal
-Motors spin on the bench before any WiFi/Linux work. Validate:
+Motors spin on the bench driven by Flysky FS-i6X transmitter via FS-iA6B receiver. Validate:
+- iBUS parsing and channel reading
 - Motor driver wiring
 - Differential drive math
 - E-stop hardware circuit
-- PWM tuning
+- Failsafe (no signal → stop motors)
 
-### STM32 Sketch — `joystick_drive.ino`
+### Hardware
+- **Transmitter:** Flysky FS-i6X (6-channel, 2.4GHz AFHDS 2A)
+- **Receiver:** Flysky FS-iA6B (6-channel, iBUS + PWM output, 3.3V signal)
+- **Protocol:** iBUS (preferred over raw PWM — single wire carries all 6 channels)
+
+### iBUS Protocol
+```
+- Baud rate: 115200
+- Packet length: 32 bytes
+- Format: 0x20, 0x40, [CH1_L, CH1_H, CH2_L, CH2_H, ... CH14_L, CH14_H], checksum
+- Channel values: 1000–2000 (µs equivalent), center = 1500
+- Update rate: ~50Hz
+```
+
+### STM32 Sketch — `rc_drive/rc_drive.ino`
 
 #### Pin Map
 ```
-A0  ← Joystick VRx  (X axis → turn left/right)
-A1  ← Joystick VRy  (Y axis → forward/back speed)
-D2  → Cytron MDD10A DIR1  (left motor direction)
-D3  → Cytron MDD10A PWM1  (left motor speed)   [PWM-capable pin]
-D4  → Cytron MDD10A DIR2  (right motor direction)
-D5  → Cytron MDD10A PWM2  (right motor speed)  [PWM-capable pin]
+D0 (Serial1 RX) ← iBUS signal from FS-iA6B iBUS port
+D2              → Cytron MDD10A DIR1  (left motor direction)
+D3              → Cytron MDD10A PWM1  (left motor speed)   [PWM-capable]
+D4              → Cytron MDD10A DIR2  (right motor direction)
+D5              → Cytron MDD10A PWM2  (right motor speed)  [PWM-capable]
 ```
-> Note: Verify exact STM32U585 PWM-capable pins in Arduino UNO Q pinout docs.
-> The UNO Q exposes standard Arduino pin headers — D3, D5, D6, D9, D10, D11
-> are typically PWM on UNO-form-factor boards.
+
+#### Channel Mapping
+```
+CH3 (left stick vertical)   → throttle: 1000=full reverse, 1500=stop, 2000=full forward
+CH4 (left stick horizontal) → rudder:   1000=full left, 1500=straight, 2000=full right
+```
 
 #### Differential Drive Math
-```
-raw_y = analogRead(A1)   // 0–1023, center ~512 = stopped
-raw_x = analogRead(A0)   // 0–1023, center ~512 = straight
-
-speed = map(raw_y, 0, 1023, -255, 255)   // negative = reverse
-turn  = map(raw_x, 0, 1023, -255, 255)   // negative = left
-
-left_speed  = constrain(speed + turn, -255, 255)
-right_speed = constrain(speed - turn, -255, 255)
-```
-
-#### Motor Output (Cytron MDD10A)
-Cytron MDD10A uses DIR + PWM per channel:
-```
-DIR = HIGH → forward, LOW → reverse
-PWM = 0–255 duty cycle (analogWrite)
-
-// Left motor
-digitalWrite(DIR1, left_speed >= 0 ? HIGH : LOW);
-analogWrite(PWM1, abs(left_speed));
-
-// Right motor
-digitalWrite(DIR2, right_speed >= 0 ? HIGH : LOW);
-analogWrite(PWM2, abs(right_speed));
-```
-
-#### Deadband
-Joystick centers are rarely exactly 512. Add a deadband:
 ```cpp
-int applyDeadband(int val, int deadband = 20) {
-  if (abs(val) < deadband) return 0;
-  return val;
-}
-speed = applyDeadband(speed);
-turn  = applyDeadband(turn);
+// Map RC channel (1000–2000) to speed (-255 to 255)
+int speed = map(ch3, 1000, 2000, -255, 255);  // throttle
+int turn  = map(ch4, 1000, 2000, -255, 255);  // rudder
+
+// Apply deadband (±30 around center)
+speed = applyDeadband(speed, 30);
+turn  = applyDeadband(turn, 30);
+
+// Differential mixing
+int left  = constrain(speed + turn, -255, 255);
+int right = constrain(speed - turn, -255, 255);
 ```
 
-#### Full Loop
-```cpp
-void loop() {
-  int raw_y = analogRead(A1);
-  int raw_x = analogRead(A0);
-
-  int speed = applyDeadband(map(raw_y, 0, 1023, -255, 255));
-  int turn  = applyDeadband(map(raw_x, 0, 1023, -255, 255));
-
-  int left  = constrain(speed + turn, -255, 255);
-  int right = constrain(speed - turn, -255, 255);
-
-  setMotor(DIR1, PWM1, left);
-  setMotor(DIR2, PWM2, right);
-
-  delay(20);  // ~50Hz update rate
-}
-```
+#### Safety Watchdog
+If no valid iBUS packet received for 500ms → set all motors to 0.
+This handles: transmitter off, receiver out of range, signal loss.
 
 ---
 
@@ -199,8 +178,10 @@ int rampedSpeed(int current, int target, int maxStep = 15) {
 
 ## Milestones
 
-- [ ] **M1** — STM32 sketch compiles, joystick moves motors on bench (Phase 1)
-- [ ] **M2** — E-stop tested: physical cut stops motors immediately
-- [ ] **M3** — Full chassis assembled, drives on floor
-- [ ] **M4** — Linux serial control working (Phase 2)
-- [ ] **M5** — Web UI driving the vehicle (Phase 3)
+- [ ] **M1** — FS-iA6B receiver bound to FS-i6X transmitter, iBUS signal confirmed
+- [ ] **M2** — STM32 sketch compiles, RC stick moves motors on bench (Phase 1)
+- [ ] **M3** — E-stop tested: physical cut stops motors immediately
+- [ ] **M4** — Failsafe tested: transmitter off → motors stop within 500ms
+- [ ] **M5** — Full chassis assembled, drives on floor
+- [ ] **M6** — Linux serial control working (Phase 2)
+- [ ] **M7** — Web UI driving the vehicle (Phase 3)
