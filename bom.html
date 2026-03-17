@@ -138,10 +138,12 @@
 </style>
 </head>
 <body>
+<style id="site-nav-css">*{box-sizing:border-box}#site-nav{display:flex;align-items:center;background:#161b22;border-bottom:1px solid #21262d;padding:0 20px;height:44px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;position:sticky;top:0;z-index:1000;}#site-nav .nav-brand{font-size:13px;font-weight:700;color:#f0f6fc;margin-right:24px;text-decoration:none;white-space:nowrap;}#site-nav .nav-links{display:flex;gap:2px;}#site-nav .nav-links a{font-size:12px;color:#8b949e;text-decoration:none;padding:6px 12px;border-radius:5px;white-space:nowrap;}#site-nav .nav-links a:hover{color:#f0f6fc;background:#21262d;}#site-nav .nav-links a.active{color:#58a6ff;background:#1c3052;}#site-nav .nav-sep{color:#30363d;margin:0 4px;font-size:11px;}body{margin-top:0!important;padding-top:0!important;}</style>
+<nav id="site-nav"><a class="nav-brand" href="/">🤖 Kourosh App Server</a><div class="nav-links"><a href="/">Home</a><span class="nav-sep">|</span><a href="/tasktracker/">TaskTracker</a><span class="nav-sep">|</span><a href="/docs/bom.html" class="active">BOM</a><span class="nav-sep">|</span><a href="/docs/chassis-drawing.html">Chassis</a><span class="nav-sep">|</span><a href="/docs/wiring-diagram.html">Wiring</a></div></nav>
 
 <header>
   <h1>🤖 Remote Mower — Test Vehicle BOM</h1>
-  <div class="meta">Rev 0.2 &nbsp;·&nbsp; <span>2026-02-24</span> &nbsp;·&nbsp; 3-Wheel Differential Drive &nbsp;·&nbsp; Chassis: 300 × 220 × 2mm Al</div>
+  <div class="meta">Rev 1.0 &nbsp;·&nbsp; <span>2026-03-17</span> &nbsp;·&nbsp; V3: RC Control (Flysky FS-i6X + FS-iA6B iBUS) &nbsp;·&nbsp; 3-Wheel Differential Drive</div>
 </header>
 
 <!-- ARCHITECTURE -->
@@ -171,12 +173,18 @@
   </div>
 
   <div class="wiring">
+<span class="hl">FS-iA6B Receiver</span><br>
+&nbsp; ├── VCC ←── Buck 5V rail<br>
+&nbsp; ├── GND ←── Common GND<br>
+&nbsp; └── <span class="hl">iBUS</span> ──→ STM32 Serial1 RX (D0) &nbsp; [single wire · all 6 channels · 115200 baud]<br>
+<br>
 Battery (12V)<br>
 &nbsp; ├── <span class="safety">[E-Stop NC]</span> ──→ <span class="safety">[Main Switch]</span> ──→ <span class="motor">Cytron MDD10A</span> ──→ Motor L (M1)<br>
 &nbsp; │ &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;└──→ Motor R (M2)<br>
-&nbsp; └── [Buck 12→5V] ──→ <span class="hl">UNO Q (5V USB-C)</span><br>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── STM32 PWM GPIO ──→ <span class="motor">MDD10A IN1/IN2/IN3/IN4</span><br>
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── Linux WiFi ──→ WebSocket control app
+&nbsp; └── [Buck 12→5V] ──→ <span class="hl">UNO Q (5V USB-C)</span> + FS-iA6B VCC<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── STM32 Serial1 RX ←── <span class="hl">FS-iA6B iBUS</span> (CH3=throttle · CH4=rudder)<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── STM32 PWM GPIO ──→ <span class="motor">MDD10A DIR1/PWM1/DIR2/PWM2</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └── Linux side ──→ (idle in Phase 1)
   </div>
 </div>
 
@@ -191,13 +199,23 @@ Battery (12V)<br>
       <tr>
         <td class="num">1</td>
         <td class="component">
-          Arduino UNO Q 2GB
+          Arduino UNO Q 4GB
           <span class="badge badge-linux">LINUX</span>
           <span class="badge badge-mcu">STM32</span>
-          <div class="sub">Qualcomm QRB2210 + STM32U585 · 16GB eMMC · WiFi5 · BT5.1</div>
+          <div class="sub">Qualcomm QRB2210 + STM32U585 · 32GB eMMC · WiFi5 · BT5.1 · SKU ABX00173</div>
         </td>
-        <td class="price">$50</td>
+        <td class="price">$59</td>
         <td class="link"><a href="https://store.arduino.cc/products/uno-q" target="_blank">arduino.cc ↗</a></td>
+      </tr>
+      <tr>
+        <td class="num">1b</td>
+        <td class="component">
+          Flysky FS-i6X Transmitter + FS-iA6B Receiver
+          <span class="badge badge-mcu">RC</span>
+          <div class="sub">6-ch 2.4GHz AFHDS 2A · iBUS protocol · 3.3V signal · single-wire all channels</div>
+        </td>
+        <td class="price">~$50</td>
+        <td class="link"><a href="https://www.amazon.com/s?k=flysky+fs-i6x+ia6b" target="_blank">Amazon ↗</a></td>
       </tr>
       <tr>
         <td class="num">2</td>
@@ -354,7 +372,8 @@ Battery (12V)<br>
 </table>
 
 <div class="links-bar">
-  <a href="/chassis-drawing.html">📐 Chassis Drawing</a>
+  <a href="/docs/chassis-drawing.html">📐 Chassis Drawing</a>
+  <a href="/docs/wiring-diagram.html">⚡ Wiring Diagram</a>
 </div>
 
 </body>
