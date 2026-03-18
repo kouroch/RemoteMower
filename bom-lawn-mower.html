@@ -122,7 +122,7 @@
 
 <header>
   <h1>🌿 Remote Mower — Lawn Mower Platform BOM</h1>
-  <div class="meta">Rev 1.0 &nbsp;·&nbsp; <span>2026-03-17</span> &nbsp;·&nbsp; Target: 50 lb payload on grass &nbsp;·&nbsp; Outdoor Differential Drive</div>
+  <div class="meta">Rev 1.1 &nbsp;·&nbsp; <span>2026-03-17</span> &nbsp;·&nbsp; Target: 50 lb &nbsp;·&nbsp; 3.5–4 km/h on grass</div>
 </header>
 
 <div class="note">
@@ -144,12 +144,17 @@
       <tr><td class="component">Grass rolling resistance coefficient</td><td>0.25–0.3</td></tr>
       <tr><td class="component">Required drive force (total)</td><td>23 kg × 9.8 × 0.3 = <strong style="color:#f0f6fc;">68 N</strong></td></tr>
       <tr><td class="component">Per motor (2 drive wheels)</td><td><strong style="color:#f0f6fc;">34 N</strong></td></tr>
-      <tr><td class="component">Wheel radius (150 mm)</td><td>0.075 m</td></tr>
-      <tr><td class="component">Required torque per motor</td><td>34 N × 0.075 m = <strong style="color:#3fb950;">~2.5 N·m</strong></td></tr>
+      <tr><td class="component">Target speed</td><td>3.5–4 km/h (typical robotic mower pace)</td></tr>
+      <tr><td class="component">Required RPM for 4 km/h</td><td>4000m/h ÷ 60 ÷ (π × 0.2m) = <strong style="color:#f0f6fc;">~106 RPM</strong></td></tr>
+      <tr><td class="component">Wheel radius (200 mm)</td><td>0.1 m</td></tr>
+      <tr><td class="component">Required torque per motor</td><td>34 N × 0.1 m = <strong style="color:#3fb950;">~3.4 N·m</strong></td></tr>
       <tr><td class="component">Safety margin (2×)</td><td><strong style="color:#3fb950;">~5 N·m per motor</strong></td></tr>
       <tr class="total-row"><td colspan="2" style="font-size:13px; color:#d29922;">⚠️ Current JGA37-520 at 150 RPM produces ~0.7 N·m — 7× too weak for this application.</td></tr>
     </tbody>
   </table>
+  <div class="note" style="margin-top:12px; margin-bottom:0;">
+    <strong>Speed check:</strong> 100 RPM × π × 0.2m wheel = 3.8 km/h ✅
+  </div>
 </div>
 
 <!-- ELECTRONICS -->
@@ -287,7 +292,7 @@
           <strong>High-Torque Gear Motors ×2</strong>
           <div class="sub">Same form factor as test vehicle — higher torque gearing · rear drive</div>
         </td>
-        <td>12V 60RPM · JGA37-520 variant · <strong>~3 N·m</strong></td>
+        <td>24V 100RPM · JGA37-520 variant · <strong>~4 N·m</strong> — 24V for torque + 3.8 km/h speed</td>
         <td class="price">~$45</td>
         <td class="status"><span class="badge badge-order">🔲 Order</span></td>
       </tr>
@@ -440,8 +445,8 @@
       <tr>
         <td class="component">Motors</td>
         <td style="color:#6e7681; font-size:13px;">JGA37-520 150RPM · ~0.7 N·m</td>
-        <td style="color:#3fb950; font-size:13px;">JGA37-520 60RPM · ~3 N·m</td>
-        <td style="font-size:13px; color:#8b949e;">4× torque for grass</td>
+        <td style="color:#3fb950; font-size:13px;">JGA37-520 100RPM/24V, ~4 N·m</td>
+        <td style="font-size:13px; color:#8b949e;">Torque + correct speed (3.8 km/h)</td>
       </tr>
       <tr>
         <td class="component">Motor Driver</td>

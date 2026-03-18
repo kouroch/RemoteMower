@@ -1,5 +1,5 @@
 # Remote Mower — Lawn Mower Platform BOM
-**Rev 1.0 · 2026-03-17**
+**Rev 1.1 · 2026-03-17**
 **Target: 50 lb payload on grass, outdoor differential drive**
 
 > This BOM covers the upgrade path from the test vehicle (bench prototype) to a
@@ -16,14 +16,17 @@ Brain: Arduino UNO Q 4GB (dual-brain: Qualcomm Linux + STM32 MCU)
 | Parameter | Value |
 |-----------|-------|
 | Total platform weight | ~50 lbs (23 kg) |
+| Target speed | 3.5–4 km/h (typical robotic mower pace) |
 | Grass rolling resistance coefficient | 0.25–0.3 |
 | Required drive force (total) | 23 kg × 9.8 × 0.3 = **68 N** |
 | Per motor (2 drive wheels) | **34 N** |
-| Wheel radius (150mm) | 0.075 m |
-| Required torque per motor | 34 N × 0.075 m = **~2.5 N·m** |
+| Wheel radius (200mm) | 0.1 m |
+| Required torque per motor | 34 N × 0.1 m = **~3.4 N·m** |
 | Safety margin (2×) | **~5 N·m per motor** |
+| Required RPM for 4 km/h | 4000m/h ÷ 60 ÷ (π × 0.2m) = **~106 RPM** |
 
-Current JGA37-520 at 150RPM produces ~0.7 N·m — 7× too weak for this application.
+**Speed check:** 100 RPM × π × 0.2m wheel = **3.8 km/h** ✅ suitable mowing speed.
+Current JGA37-520 at 150RPM/12V produces ~0.7 N·m — both too fast and too weak for grass hauling.
 
 ---
 
@@ -50,14 +53,16 @@ Current JGA37-520 at 150RPM produces ~0.7 N·m — 7× too weak for this applica
 
 | # | Component | Spec | Est Price | Status |
 |---|-----------|------|-----------|--------|
-| 11 | **High-torque gear motors ×2** | **12V 60RPM JGA37-520 variant, ~3 N·m** — same form factor, higher torque gearing | ~$45 | 🔲 Order |
+| 11 | **High-torque gear motors ×2** | **24V 100RPM JGA37-520 variant, ~4 N·m** — same form factor, 24V for torque+speed | ~$45 | 🔲 Order |
 | 12 | **Pneumatic wheels 200mm ×2** | Inflatable rubber tire, 200mm, D-shaft or keyway hub — grass traction | ~$35 | 🔲 Order |
 | 13 | **Heavy-duty front caster ×2** | Swivel, 3″–4″, rated for 30+ lbs each | ~$20 | 🔲 Order |
 
 > **Alternative motors worth considering:**
-> - **EMG30 (12V 30RPM, 3.5 N·m)** — outdoor robot standard, ~$45/each, excellent documentation
-> - **Greartisan 12V 50RPM high-torque** — Amazon available, ~$20/each, good value
-> - **BaneBots RS-775 + 64:1 gearbox** — ~4 N·m, FRC-grade, ~$40/each
+> - **EMG30 (24V 170RPM, ~2 N·m)** — 5.3 km/h, outdoor robot standard, ~$45/each
+> - **Greartisan 24V 100RPM high-torque** — Amazon available, ~$20/each, good value
+> - **BaneBots RS-775 + 26:1 gearbox** — ~3 N·m at ~100RPM, FRC-grade, ~$40/each
+>
+> **Speed reference:** 100 RPM × π × 0.2m wheel = 3.8 km/h · 150 RPM = 5.7 km/h · 60 RPM = 2.3 km/h (too slow)
 
 **Motors/drive subtotal: ~$100**
 
@@ -94,7 +99,7 @@ Current JGA37-520 at 150RPM produces ~0.7 N·m — 7× too weak for this applica
 
 | Component | Test Vehicle | Lawn Mower Platform | Reason |
 |-----------|-------------|---------------------|--------|
-| Motors | JGA37-520 150RPM, ~0.7 N·m | JGA37-520 60RPM, ~3 N·m | 4× torque for grass |
+| Motors | JGA37-520 150RPM/12V, ~0.7 N·m | JGA37-520 100RPM/24V, ~4 N·m | Torque + correct speed (3.8 km/h) |
 | Motor driver | MDD10A (10A/ch) | MDD20A (20A/ch) | Higher stall current on grass |
 | Wheels | 90mm rubber | 200mm pneumatic | Traction + ground clearance |
 | Battery | 12V 5Ah Li-ion | 24V 10Ah LiFePO4 | Runtime + outdoor safety |

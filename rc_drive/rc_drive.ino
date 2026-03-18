@@ -72,6 +72,11 @@ void setup() {
 
 // ── Main loop ──────────────────────────────────────────────────────────────
 void loop() {
+  //debug
+  Serial.print("L:"); Serial.print(currentLeft);
+  Serial.print(" R:"); Serial.println(currentRight);
+
+  
   // Read incoming iBUS bytes
   while (Serial1.available()) {
     uint8_t b = Serial1.read();
