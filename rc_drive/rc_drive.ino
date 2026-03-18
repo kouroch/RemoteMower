@@ -14,8 +14,15 @@
  *   Cytron MDD10A PWM2 →  D5  [right motor]
  *
  * Channel mapping (FS-i6X defaults):
- *   CH3 = left stick vertical  → throttle (forward/back)
+ *   CH3 = left stick vertical   → throttle (forward/back)
  *   CH4 = left stick horizontal → rudder (turn left/right)
+ *   CH5 = SWA or SWB switch     → kill switch (UP=kill, DOWN=armed)
+ *
+ * Startup procedure:
+ *   1. Flip kill switch UP (CH5 > 1500) before powering on
+ *   2. Power on — motors stay dead regardless of throttle position
+ *   3. Center the throttle stick
+ *   4. Flip kill switch DOWN → robot armed and ready
  */
 
 // ── Pin definitions ────────────────────────────────────────────────────────
@@ -34,6 +41,8 @@
 // ── Control config ─────────────────────────────────────────────────────────
 #define CH_THROTTLE     2     // CH3 (0-indexed: CH3 = index 2)
 #define CH_RUDDER       3     // CH4 (0-indexed: CH4 = index 3)
+#define CH_KILL         4     // CH5 (0-indexed: CH5 = index 4) — SWA or SWB on FS-i6X
+#define KILL_THRESHOLD  1500  // >1500 = switch UP = kill engaged
 #define RC_MIN          1000
 #define RC_MID          1500
 #define RC_MAX          2000
@@ -98,6 +107,17 @@ void loop() {
 
   // Watchdog: stop motors if signal lost
   if (millis() - lastPacketMs > WATCHDOG_MS) {
+    currentLeft  = rampToward(currentLeft,  0);
+    currentRight = rampToward(currentRight, 0);
+    setMotor(DIR1, PWM1, currentLeft);
+    setMotor(DIR2, PWM2, currentRight);
+    return;
+  }
+
+  // Kill switch check (CH5 — SWA/SWB on FS-i6X)
+  // Switch UP (>1500) = kill engaged → motors stopped
+  // Switch DOWN (<1500) = armed → normal operation
+  if (channels[CH_KILL] > KILL_THRESHOLD) {
     currentLeft  = rampToward(currentLeft,  0);
     currentRight = rampToward(currentRight, 0);
     setMotor(DIR1, PWM1, currentLeft);
