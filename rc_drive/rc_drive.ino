@@ -39,10 +39,14 @@
 #define NUM_CHANNELS    14    // FS-iA6B supports up to 14 channels via iBUS
 
 // ── Control config ─────────────────────────────────────────────────────────
-#define CH_THROTTLE     1     // CH2 (0-indexed: CH2 = index 1) — right stick vertical, spring-centered
-#define CH_RUDDER       0     // CH1 (0-indexed: CH1 = index 0) — right stick horizontal, spring-centered
-#define CH_KILL         4     // CH5 (0-indexed: CH5 = index 4) — SWA on FS-i6X (optional backup kill)
-#define KILL_THRESHOLD  1500  // >1500 = switch UP = kill engaged
+ #define CH_THROTTLE     1     // CH2 (0-indexed: CH2 = index 1) — right stick vertical, spring-centered
+ #define CH_RUDDER       0     // CH1 (0-indexed: CH1 = index 0) — right stick horizontal, spring-centered
+// #define CH_THROTTLE     2     // back to CH3
+// #define CH_RUDDER       3     // back to CH4
+
+
+#define CH_KILL         -1    // Kill switch disabled — right stick self-centers to zero
+#define KILL_THRESHOLD  1500  // (unused)
 #define RC_MIN          1000
 #define RC_MID          1500
 #define RC_MAX          2000
@@ -82,15 +86,16 @@ void setup() {
 // ── Main loop ──────────────────────────────────────────────────────────────
 void loop() {
   //debug
-  Serial.print("L:"); Serial.print(currentLeft);
-  Serial.print(" R:"); Serial.println(currentRight);
+  // Serial.print("L:"); Serial.print(currentLeft);
+  // Serial.print(" R:"); Serial.println(currentRight);
 
   
   // Read incoming iBUS bytes
   while (Serial1.available()) {
     uint8_t b = Serial1.read();
     ibusBuffer[bufIdx++] = b;
-
+// debug
+// Serial.print("byte: "); Serial.println(b, HEX); 
     // Sync on header bytes
     if (bufIdx == 1 && b != IBUS_HEADER1) { bufIdx = 0; continue; }
     if (bufIdx == 2 && b != IBUS_HEADER2) { bufIdx = 0; continue; }
@@ -99,7 +104,15 @@ void loop() {
     if (bufIdx == IBUS_PACKET_LEN) {
       if (verifyChecksum()) {
         parseChannels();
+
+
+        
         lastPacketMs = millis();
+        // debug
+//Serial.print("CH1="); Serial.print(channels[0]);
+//Serial.print(" CH2="); Serial.print(channels[1]);
+//Serial.print(" CH3="); Serial.print(channels[2]);
+//Serial.print(" CH4="); Serial.println(channels[3]);
       }
       bufIdx = 0;
     }
@@ -114,17 +127,7 @@ void loop() {
     return;
   }
 
-  // Kill switch check (CH5 — SWA on FS-i6X, optional backup)
-  // Right stick self-centers to stop already — this is an extra safety layer
-  // Switch UP (>1500) = kill engaged → motors stopped
-  // Switch DOWN (<1500) = armed → normal operation
-  if (channels[CH_KILL] > KILL_THRESHOLD) {
-    currentLeft  = rampToward(currentLeft,  0);
-    currentRight = rampToward(currentRight, 0);
-    setMotor(DIR1, PWM1, currentLeft);
-    setMotor(DIR2, PWM2, currentRight);
-    return;
-  }
+  // Right stick is now the sole safety (spring-centered). Kill switch removed for simplicity.
 
   // Map RC channels to drive commands
   int throttle = rcToSpeed(channels[CH_THROTTLE]);
