@@ -2,7 +2,7 @@
  * rc_drive.ino — Remote Mower V3
  * RC control via Flysky FS-iA6B receiver (iBUS protocol)
  * Target: Arduino UNO Q (STM32U585 MCU)
- * Rev 1.0 · 2026-03-17
+ * Rev 1.1 · 2026-03-21
  *
  * Wiring:
  *   FS-iA6B iBUS port  →  D0 (Serial1 RX)
@@ -13,16 +13,16 @@
  *   Cytron MDD10A DIR2 →  D4
  *   Cytron MDD10A PWM2 →  D5  [right motor]
  *
- * Channel mapping (FS-i6X defaults):
- *   CH3 = left stick vertical   → throttle (forward/back)
- *   CH4 = left stick horizontal → rudder (turn left/right)
- *   CH5 = SWA or SWB switch     → kill switch (UP=kill, DOWN=armed)
+ * Channel mapping (FS-i6X):
+ *   CH1 = right stick horizontal → rudder (turn left/right)  [spring-centered]
+ *   CH2 = right stick vertical   → throttle (forward/back)   [spring-centered]
+ *   CH5 = SWA switch             → kill switch (UP=kill, DOWN=armed) [optional]
  *
- * Startup procedure:
- *   1. Flip kill switch UP (CH5 > 1500) before powering on
- *   2. Power on — motors stay dead regardless of throttle position
- *   3. Center the throttle stick
- *   4. Flip kill switch DOWN → robot armed and ready
+ * Right stick is spring-centered on both axes — releasing it snaps to 1500
+ * (center = stop), acting as a natural emergency stop. No startup procedure needed.
+ *
+ * Note: Left stick vertical (CH3) is ratcheted/detented on Mode 2 transmitters
+ * and holds position when released — NOT suitable as throttle for a ground vehicle.
  */
 
 // ── Pin definitions ────────────────────────────────────────────────────────
@@ -39,9 +39,9 @@
 #define NUM_CHANNELS    14    // FS-iA6B supports up to 14 channels via iBUS
 
 // ── Control config ─────────────────────────────────────────────────────────
-#define CH_THROTTLE     2     // CH3 (0-indexed: CH3 = index 2)
-#define CH_RUDDER       3     // CH4 (0-indexed: CH4 = index 3)
-#define CH_KILL         4     // CH5 (0-indexed: CH5 = index 4) — SWA or SWB on FS-i6X
+#define CH_THROTTLE     1     // CH2 (0-indexed: CH2 = index 1) — right stick vertical, spring-centered
+#define CH_RUDDER       0     // CH1 (0-indexed: CH1 = index 0) — right stick horizontal, spring-centered
+#define CH_KILL         4     // CH5 (0-indexed: CH5 = index 4) — SWA on FS-i6X (optional backup kill)
 #define KILL_THRESHOLD  1500  // >1500 = switch UP = kill engaged
 #define RC_MIN          1000
 #define RC_MID          1500
@@ -114,7 +114,8 @@ void loop() {
     return;
   }
 
-  // Kill switch check (CH5 — SWA/SWB on FS-i6X)
+  // Kill switch check (CH5 — SWA on FS-i6X, optional backup)
+  // Right stick self-centers to stop already — this is an extra safety layer
   // Switch UP (>1500) = kill engaged → motors stopped
   // Switch DOWN (<1500) = armed → normal operation
   if (channels[CH_KILL] > KILL_THRESHOLD) {
