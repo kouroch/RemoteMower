@@ -8,7 +8,21 @@ import asyncio
 import json
 import time
 import websockets
-from arduino.app_utils import *
+
+try:
+    from arduino.app_utils import *
+    BRIDGE_AVAILABLE = True
+except ImportError:
+    # Running standalone (not via App Lab) — Bridge not available
+    print("[mower] WARNING: arduino.app_utils not found — Bridge calls will be skipped")
+    BRIDGE_AVAILABLE = False
+    class _FakeBridge:
+        def call(self, *args): pass
+    Bridge = _FakeBridge()
+    class _FakeApp:
+        def run(self, user_loop=None):
+            if user_loop: user_loop()
+    App = _FakeApp()
 
 # ── State ────────────────────────────────────────────────────────────────────
 last_cmd_time = 0
