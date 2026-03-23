@@ -45,6 +45,7 @@ async def handle_client(websocket):
                 elif "left" in cmd and "right" in cmd:
                     left  = int(max(-255, min(255, cmd["left"])))
                     right = int(max(-255, min(255, cmd["right"])))
+                    print(f"[mower] drive L:{left} R:{right}")
                     Bridge.call("drive", left, right)
                     last_cmd_time = time.time()
             except Exception as e:
