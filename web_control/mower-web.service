@@ -1,0 +1,12 @@
+[Unit]
+Description=Mower Web Control Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/arduino/mower-web/server.py
+Restart=always
+RestartSec=5
+WorkingDirectory=/home/arduino/mower-web
+
+[Install]
+WantedBy=default.target

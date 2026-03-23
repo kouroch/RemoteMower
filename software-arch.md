@@ -93,66 +93,75 @@ running (powered separately via buck converter → UNO Q USB-C). This means:
 
 ---
 
-## Phase 2 — Linux Serial Control (Future)
+## Phase 2 — Web Control via Linux RPC Bridge (Complete)
+**Rev 2.0 · 2026-03-23**
 
 ### Goal
-Linux side sends drive commands over UART to STM32. WiFi joystick or simple
-terminal control. Validates the Linux↔STM32 serial bridge.
-
-### Serial Protocol (simple text)
-```
-D <left_speed> <right_speed>\n
-  e.g. "D 180 -180\n" = spin in place left
-       "D 255 255\n"  = full speed forward
-       "D 0 0\n"      = stop
-
-H\n   = heartbeat (Linux → STM32, every 200ms)
-```
-
-### STM32 Changes for Phase 2
-- Parse serial commands in addition to (or instead of) joystick ADC
-- Add watchdog: if no `H` received for 600ms (3× interval) → set motors to 0
-- Can keep joystick as manual override fallback
-
-### Linux Side (Python sketch)
-```python
-# phase2_control.py
-import serial, time
-
-ser = serial.Serial('/dev/ttySTM32', 115200, timeout=0.1)
-
-def drive(left, right):
-    ser.write(f"D {left} {right}\n".encode())
-
-def heartbeat():
-    ser.write(b"H\n")
-
-# Main loop: read keyboard/WebSocket, send commands + heartbeat
-```
-
----
-
-## Phase 3 — Web UI Control (Future)
-
-### Goal
-Browser joystick (or WASD keys) → WebSocket → Linux Python server → serial → STM32.
-Hosted on XPS app server at `http://kourosh-xps-8930/mower/`.
+Browser joystick (WASD or virtual touch joystick) → WebSocket → Python server on
+UNO Q Linux → msgpack RPC over serial → STM32 → motors.
+RC receiver remains active as automatic fallback.
 
 ### Architecture
 ```
-Browser (Web UI)
-    ↕ WebSocket ws://uno-q-ip:8765
-Linux (Python WebSocket server)
-    ↕ Serial /dev/ttySTM32
-STM32 (motor driver)
+Browser (index.html — virtual joystick + WASD)
+    ↕ WebSocket ws://larine.local:8765
+UNO Q Linux (server.py — asyncio + websockets)
+    ↕ msgpack RPC notify over /dev/ttySTM0 @ 115200
+STM32 (rc_drive_v2.ino — Arduino_RPClite server on Serial2)
     ↕ PWM
 Cytron MDD10A → Motors
+         ↑
+    Serial1 ← iBUS ← FS-iA6B RC receiver (always active, fallback)
 ```
 
-### Notes
-- Web UI fits naturally into existing Caddy subpath setup on XPS
-- UNO Q Linux IP discoverable via Tailscale or mDNS
-- Same serial protocol from Phase 2
+### Serial Ports
+| Port | Role |
+|------|------|
+| `/dev/ttySTM0` | Linux → STM32 bridge (Python writes RPC here) |
+| `Serial1` (D0) | STM32 iBUS input from RC receiver (unchanged) |
+| `Serial2` | STM32 RPC server — **hardware verification needed**: confirm this is the Linux bridge UART on UNO Q STM32 |
+
+### RPC Protocol (Arduino_RPClite)
+Python sends msgpack **notify** frames (fire-and-forget, no response expected):
+```python
+# notify: [2, method_name, [args]]
+msgpack.packb([2, "drive", [left, right]])  # -255..255
+msgpack.packb([2, "stop",  []])
+```
+
+### STM32 Sketch — `rc_drive_v2/rc_drive_v2.ino`
+- Includes `Arduino_RPClite.h`, RPC server on Serial2
+- Exposes `drive(int left, int right)` and `stop()` RPC methods
+- **Priority**: if web command received within last 500ms → use web targets; else fall back to iBUS RC
+- All existing watchdog/ramp/deadband/setMotor logic preserved
+- RC receiver on Serial1 (D0 RX) is unchanged — always active as fallback
+
+### Python Server — `web_control/server.py`
+- asyncio + websockets, listens on `0.0.0.0:8765`
+- Opens `/dev/ttySTM0` at 115200; reconnects on serial error
+- Accepts JSON from browser: `{"left": 200, "right": 200}` · `{"stop": true}` · `{"status": true}`
+- Heartbeat task: sends `stop()` RPC if no browser command for 600ms
+- Logs all activity to stdout; managed by systemd user service
+
+### Web UI — `web_control/index.html`
+- Single-file, no CDN dependencies
+- Dark theme (#0d1117 / #58a6ff — matches bom.html)
+- Virtual joystick (canvas): vertical = throttle, horizontal = turn → differential mixing
+- WASD / arrow key support
+- Big red STOP button
+- Connection status indicator
+- Sends commands at 50ms interval while joystick active
+- Connects to `ws://${host}:8765`; host from `?host=` URL param or `window.location.hostname`
+
+### Deployment
+```bash
+# From mower workspace root:
+./web_control/deploy.sh
+# Deploys to arduino@larine.local:/home/arduino/mower-web/
+# Installs systemd user service: mower-web.service
+```
+
+Web UI also accessible from XPS at `/mower/` via existing Caddy subpath setup.
 
 ---
 
