@@ -56,4 +56,8 @@ def user_loop():
     asyncio.run(run_server())
 
 if __name__ == "__main__":
-    App.run(user_loop=user_loop)
+    if BRIDGE_AVAILABLE:
+        App.run(user_loop=user_loop)
+    else:
+        # Running standalone — skip App.run() and go direct
+        asyncio.run(run_server())
