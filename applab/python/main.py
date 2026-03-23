@@ -66,9 +66,9 @@ async def heartbeat():
 # ── Main async entry ─────────────────────────────────────────────────────────
 async def main():
     print("[mower] Starting WebSocket server on port 8765...")
-    server = await websockets.serve(handle_client, "0.0.0.0", 8765)
-    print("[mower] Listening on port 8765")
-    await asyncio.gather(heartbeat(), server.wait_closed())
+    async with websockets.serve(handle_client, "0.0.0.0", 8765):
+        print("[mower] Listening on port 8765")
+        await asyncio.gather(heartbeat(), asyncio.get_event_loop().create_future())
 
 # ── App Lab entry point ──────────────────────────────────────────────────────
 _server_started = False
