@@ -60,7 +60,8 @@ async def heartbeat():
 async def websocket_main():
     print("[mower] WebSocket server starting on port 8765...")
     async with websockets.serve(handle_client, "0.0.0.0", 8765):
-        await heartbeat()  # runs forever alongside the server
+        print("[mower] WebSocket server listening on port 8765")
+        await asyncio.gather(heartbeat(), asyncio.Future())  # run forever
 
 def run_websocket_server():
     asyncio.run(websocket_main())
