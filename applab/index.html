@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Mower Control</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0d1117;
+    --surface: #161b22;
+    --border:  #30363d;
+    --text:    #c9d1d9;
+    --muted:   #8b949e;
+    --accent:  #58a6ff;
+    --red:     #f85149;
+    --green:   #3fb950;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100dvh;
+    padding: 16px;
+    gap: 16px;
+    touch-action: none;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  h1 { font-size: 1.1rem; font-weight: 600; flex: 1; }
+
+  #status-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+  #status-dot.connected { background: var(--green); }
+
+  #status-label { font-size: 0.8rem; color: var(--muted); }
+
+  .readout {
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+  }
+
+  #joystick-wrap {
+    position: relative;
+    width: min(320px, 85vw);
+    height: min(320px, 85vw);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    touch-action: none;
+    user-select: none;
+  }
+
+  canvas#joystick {
+    display: block;
+    border-radius: 50%;
+  }
+
+  #stop-btn {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 18px 0;
+    width: 100%;
+    max-width: 480px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #stop-btn:active { filter: brightness(0.8); }
+
+  footer {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div id="status-dot"></div>
+  <span id="status-label">Disconnected</span>
+  <h1>Mower Control</h1>
+</header>
+
+<div class="readout" id="readout">L: &nbsp;&nbsp;0 &nbsp;&nbsp;R: &nbsp;&nbsp;0</div>
+
+<div id="joystick-wrap">
+  <canvas id="joystick"></canvas>
+</div>
+
+<button id="stop-btn">&#9632; STOP</button>
+
+<footer>WASD keyboard · drag joystick · tap STOP</footer>
+
+<script>
+// ── WebSocket connection ────────────────────────────────────────────────────
+const params = new URLSearchParams(window.location.search);
+const host   = params.get("host") || window.location.hostname || "localhost";
+const WS_URL = `ws://${host}:8765`;
+
+let ws = null;
+let wsReady = false;
+
+const dot   = document.getElementById("status-dot");
+const label = document.getElementById("status-label");
+
+function connect() {
+  ws = new WebSocket(WS_URL);
+
+  ws.addEventListener("open", () => {
+    wsReady = true;
+    dot.classList.add("connected");
+    label.textContent = "Connected";
+    console.log("WS connected:", WS_URL);
+  });
+
+  ws.addEventListener("close", () => {
+    wsReady = false;
+    dot.classList.remove("connected");
+    label.textContent = "Disconnected — retrying…";
+    setTimeout(connect, 2000);
+  });
+
+  ws.addEventListener("error", () => {
+    ws.close();
+  });
+
+  ws.addEventListener("message", (e) => {
+    // status responses — ignore for now
+    console.log("WS msg:", e.data);
+  });
+}
+
+function sendCmd(obj) {
+  if (wsReady && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify(obj));
+  }
+}
+
+connect();
+
+// ── Drive math ─────────────────────────────────────────────────────────────
+function mixDrive(throttle, turn) {
+  // throttle, turn: -1.0 to 1.0
+  const MAX = 255;
+  const left  = Math.max(-MAX, Math.min(MAX, Math.round((throttle + turn) * MAX)));
+  const right = Math.max(-MAX, Math.min(MAX, Math.round((throttle - turn) * MAX)));
+  return { left, right };
+}
+
+// ── Joystick ───────────────────────────────────────────────────────────────
+const canvas = document.getElementById("joystick");
+const ctx    = canvas.getContext("2d");
+const wrap   = document.getElementById("joystick-wrap");
+
+let joyActive = false;
+let joyX = 0, joyY = 0;   // -1..1 normalised
+let stickX = 0, stickY = 0; // canvas coords of stick
+
+function resizeCanvas() {
+  const size = wrap.clientWidth;
+  canvas.width  = size;
+  canvas.height = size;
+  drawJoystick();
+}
+
+function drawJoystick() {
+  const w = canvas.width, h = canvas.height;
+  const cx = w / 2, cy = h / 2;
+  const outerR = Math.min(cx, cy) - 4;
+  const stickR = outerR * 0.28;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Outer ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerR, 0, Math.PI * 2);
+  ctx.strokeStyle = "#30363d";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Center crosshairs
+  ctx.strokeStyle = "#21262d";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx, cy - outerR); ctx.lineTo(cx, cy + outerR); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - outerR, cy); ctx.lineTo(cx + outerR, cy); ctx.stroke();
+
+  // Stick
+  const sx = joyActive ? stickX : cx;
+  const sy = joyActive ? stickY : cy;
+
+  const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, stickR);
+  grad.addColorStop(0, "#58a6ff");
+  grad.addColorStop(1, "#1f6feb");
+
+  ctx.beginPath();
+  ctx.arc(sx, sy, stickR, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+}
+
+function joystickFromEvent(e) {
+  const rect  = canvas.getBoundingClientRect();
+  const cx    = rect.width / 2;
+  const cy    = rect.height / 2;
+  const outerR = Math.min(cx, cy) - 4;
+  const stickR = outerR * 0.28;
+
+  let px = (e.clientX !== undefined ? e.clientX : e.touches[0].clientX) - rect.left;
+  let py = (e.clientY !== undefined ? e.clientY : e.touches[0].clientY) - rect.top;
+
+  let dx = px - cx;
+  let dy = py - cy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const maxR = outerR - stickR;
+
+  if (dist > maxR) {
+    dx = dx / dist * maxR;
+    dy = dy / dist * maxR;
+  }
+
+  stickX = cx + dx;
+  stickY = cy + dy;
+  joyX   = dx / maxR;
+  joyY   = -dy / maxR;  // invert Y: up = positive throttle
+}
+
+function joyStart(e) {
+  e.preventDefault();
+  joyActive = true;
+  joystickFromEvent(e);
+  drawJoystick();
+}
+
+function joyMove(e) {
+  if (!joyActive) return;
+  e.preventDefault();
+  joystickFromEvent(e);
+  drawJoystick();
+}
+
+function joyEnd(e) {
+  e.preventDefault();
+  joyActive = false;
+  joyX = 0; joyY = 0;
+  drawJoystick();
+}
+
+canvas.addEventListener("mousedown",  joyStart, { passive: false });
+canvas.addEventListener("mousemove",  joyMove,  { passive: false });
+canvas.addEventListener("mouseup",    joyEnd,   { passive: false });
+canvas.addEventListener("mouseleave", joyEnd,   { passive: false });
+canvas.addEventListener("touchstart", joyStart, { passive: false });
+canvas.addEventListener("touchmove",  joyMove,  { passive: false });
+canvas.addEventListener("touchend",   joyEnd,   { passive: false });
+
+// ── WASD keyboard ──────────────────────────────────────────────────────────
+const keys = {};
+
+document.addEventListener("keydown", (e) => {
+  keys[e.key.toLowerCase()] = true;
+  if (["w","a","s","d"," "].includes(e.key.toLowerCase())) e.preventDefault();
+});
+
+document.addEventListener("keyup", (e) => {
+  keys[e.key.toLowerCase()] = false;
+});
+
+function getKeyboardAxes() {
+  let t = 0, r = 0;
+  if (keys["w"] || keys["arrowup"])    t += 1;
+  if (keys["s"] || keys["arrowdown"])  t -= 1;
+  if (keys["a"] || keys["arrowleft"])  r -= 1;
+  if (keys["d"] || keys["arrowright"]) r += 1;
+  return { t, r };
+}
+
+// ── STOP button ─────────────────────────────────────────────────────────────
+document.getElementById("stop-btn").addEventListener("click", () => {
+  joyActive = false;
+  joyX = 0; joyY = 0;
+  Object.keys(keys).forEach(k => keys[k] = false);
+  drawJoystick();
+  sendCmd({ stop: true });
+  updateReadout(0, 0);
+});
+
+// ── Send loop (50ms) ────────────────────────────────────────────────────────
+const readout = document.getElementById("readout");
+
+function updateReadout(left, right) {
+  const fmt = n => String(n).padStart(4);
+  readout.textContent = `L: ${fmt(left)}   R: ${fmt(right)}`;
+}
+
+setInterval(() => {
+  const kb = getKeyboardAxes();
+  let throttle = joyActive ? joyY : kb.t;
+  let turn     = joyActive ? joyX : kb.r;
+
+  if (throttle === 0 && turn === 0) return; // nothing to send
+
+  const { left, right } = mixDrive(throttle, turn);
+  updateReadout(left, right);
+  sendCmd({ left, right });
+}, 50);
+
+// ── Init ────────────────────────────────────────────────────────────────────
+new ResizeObserver(resizeCanvas).observe(wrap);
+resizeCanvas();
+</script>
+</body>
+</html>

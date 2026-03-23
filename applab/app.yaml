@@ -1,0 +1,5 @@
+name: Remote Mower Web Control
+description: RC + web-based differential drive control for the Remote Mower test vehicle. Flysky iBUS RC receiver as primary control, WebSocket browser UI as secondary.
+ports: []
+bricks: []
+icon: 🤖
