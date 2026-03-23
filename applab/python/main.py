@@ -6,6 +6,7 @@
 
 import asyncio
 import json
+import threading
 import time
 import websockets
 
@@ -69,8 +70,16 @@ async def main():
     await asyncio.gather(heartbeat(), server.wait_closed())
 
 # ── App Lab entry point ──────────────────────────────────────────────────────
+_server_started = False
+
 def user_loop():
-    asyncio.run(main())
+    """Called repeatedly by App Lab — start server once, then just sleep."""
+    global _server_started
+    if not _server_started:
+        _server_started = True
+        t = threading.Thread(target=lambda: asyncio.run(main()), daemon=True)
+        t.start()
+    time.sleep(0.5)
 
 if __name__ == "__main__":
     App.run(user_loop=user_loop)
