@@ -1,5 +1,5 @@
 // Remote Mower — App Lab Sketch
-// Rev 1.0 · 2026-03-23
+// Rev 1.1 · 2026-03-24 19:54 EDT
 //
 // Dual control: Flysky FS-iA6B RC receiver (iBUS) + Linux WebSocket (via Bridge RPC)
 // RC is always active as fallback. Web commands take priority for 500ms after receipt.
@@ -64,6 +64,10 @@ void drive(int left, int right) {
   webLeft  = constrain(left,  -MAX_SPEED, MAX_SPEED);
   webRight = constrain(right, -MAX_SPEED, MAX_SPEED);
   lastWebCmdMs = millis();
+  Serial.print("[RC] drive RPC L:");
+  Serial.print(webLeft);
+  Serial.print(" R:");
+  Serial.println(webRight);
 }
 
 // stop(): emergency stop from web
@@ -71,10 +75,15 @@ void stop_motors() {
   webLeft  = 0;
   webRight = 0;
   lastWebCmdMs = millis();
+  Serial.println("[RC] stop RPC");
 }
 
 // ── Setup ───────────────────────────────────────────────────────────────────
 void setup() {
+  Serial.begin(115200);
+  while (!Serial) {}
+  Serial.println("[RC] Remote Mower sketch starting...");
+
   pinMode(DIR1, OUTPUT);
   pinMode(PWM1, OUTPUT);
   pinMode(DIR2, OUTPUT);
@@ -85,11 +94,13 @@ void setup() {
 
   // iBUS from RC receiver
   Serial1.begin(IBUS_BAUD);
+  Serial.println("[RC] iBUS ready on Serial1");
 
   // Linux Bridge RPC
   Bridge.begin();
   Bridge.provide("drive", drive);
   Bridge.provide("stop", stop_motors);
+  Serial.println("[RC] Bridge RPC ready");
 }
 
 // ── Main loop ───────────────────────────────────────────────────────────────
