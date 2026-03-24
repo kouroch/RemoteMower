@@ -1,5 +1,5 @@
 # Remote Mower — App Lab Python
-# Rev 1.2 · 2026-03-23
+# Rev 1.3 · 2026-03-24 18:57 EDT
 
 import asyncio
 import json
@@ -52,12 +52,28 @@ async def run_server():
         print("[mower] Listening on port 8765")
         await asyncio.Future()  # run forever
 
+import threading
+
+_server_thread = None
+
+def _run_in_thread():
+    """Run the WebSocket server in a dedicated thread with its own event loop."""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop.run_until_complete(run_server())
+
 def user_loop():
-    asyncio.run(run_server())
+    """Called repeatedly by App Lab — start server thread once, then sleep."""
+    global _server_thread
+    if _server_thread is None:
+        _server_thread = threading.Thread(target=_run_in_thread, daemon=True)
+        _server_thread.start()
+        print("[mower] Server thread started")
+    time.sleep(0.5)
 
 if __name__ == "__main__":
     if BRIDGE_AVAILABLE:
         App.run(user_loop=user_loop)
     else:
-        # Running standalone — skip App.run() and go direct
+        # Running standalone — go direct
         asyncio.run(run_server())
