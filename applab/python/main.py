@@ -1,10 +1,14 @@
 # Remote Mower — App Lab Python
-# Rev 1.3 · 2026-03-24 18:57 EDT
+# Rev 1.4 · 2026-03-24 19:14 EDT
 
 import asyncio
 import json
+import os
 import time
 import websockets
+
+# Print file identity on startup — confirms which version App Lab loaded
+print(f"[mower] main.py rev=1.4 mtime={os.path.getmtime(__file__):.0f} path={__file__}")
 
 try:
     from arduino.app_utils import *
