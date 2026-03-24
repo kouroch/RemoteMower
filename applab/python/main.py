@@ -1,5 +1,5 @@
 # Remote Mower — App Lab Python
-# Rev 1.4 · 2026-03-24 19:14 EDT
+# Rev 1.5 · 2026-03-24 19:28 EDT
 
 import asyncio
 import json
@@ -35,13 +35,13 @@ async def handle_client(websocket):
                 cmd = json.loads(message)
                 if cmd.get("stop"):
                     print("[mower] STOP")
-                    Bridge.call("stop")
+                    Bridge.notify("stop")
                     last_cmd_time = 0
                 elif "left" in cmd and "right" in cmd:
                     left  = int(max(-255, min(255, cmd["left"])))
                     right = int(max(-255, min(255, cmd["right"])))
                     print(f"[mower] drive L:{left} R:{right}")
-                    Bridge.call("drive", left, right)
+                    Bridge.notify("drive", left, right)
                     last_cmd_time = time.time()
             except Exception as e:
                 print(f"[mower] Error: {e}")
